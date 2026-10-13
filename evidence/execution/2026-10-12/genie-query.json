@@ -19,10 +19,22 @@
     "truncated": false
   },
   "question": "Cuales son los clientes con el mayor potencial de abandono?",
-  "generated_sql": "WITH latest_run AS (\n  SELECT run_id, MAX(scored_at) AS max_scored_at\n  FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_graph_predictions\n  WHERE run_id IS NOT NULL\n  GROUP BY run_id\n  QUALIFY ROW_NUMBER() OVER (ORDER BY max_scored_at DESC, run_id DESC) = 1\n), ranked_customers AS (\n  SELECT\n    CONCAT('***', RIGHT(customer_id, 4)) AS cliente_mascarado,\n    risk_tier,\n    baseline_churn_probability,\n    influenced_revenue_usd,\n    influence_score,\n    contagion_risk_score,\n    high_risk_neighbour_pct,\n    recommended_action,\n    scored_at,\n    RANK() OVER (\n      ORDER BY baseline_churn_probability DESC, influenced_revenue_usd DESC,\n               influence_score DESC, contagion_risk_score DESC\n    ) AS risk_rank\n  FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_graph_predictions\n  WHERE customer_id IS NOT NULL\n    AND baseline_churn_probability IS NOT NULL\n    AND influenced_revenue_usd IS NOT NULL\n    AND influence_score IS NOT NULL\n    AND contagion_risk_score IS NOT NULL\n    AND run_id = (SELECT run_id FROM latest_run)\n)\nSELECT *\nFROM ranked_customers\nWHERE risk_rank <= 10\nORDER BY risk_rank, baseline_churn_probability DESC,\n         influenced_revenue_usd DESC, influence_score DESC,\n         contagion_risk_score DESC",
+  "generated_sql": "WITH latest_run AS (\n  SELECT run_id, MAX(scored_at) AS max_scored_at\n  FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_graph_predictions\n  WHERE run_id IS NOT NULL\n  GROUP BY run_id\n  QUALIFY ROW_NUMBER() OVER (ORDER BY max_scored_at DESC, run_id DESC) = 1\n), ranked_customers AS (\n  SELECT\n    CONCAT('***', RIGHT(customer_id, 4)) AS cliente_mascarado,\n    risk_tier,\n    baseline_churn_probability,\n    influenced_revenue_usd,\n    influence_score,\n    contagion_risk_score,\n    high_risk_neighbour_pct,\n    recommended_action,\n    scored_at,\n    RANK() OVER (\n      ORDER BY baseline_churn_probability DESC, influenced_revenue_usd DESC, influence_score DESC, contagion_risk_score DESC\n    ) AS risk_rank\n  FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_graph_predictions\n  WHERE customer_id IS NOT NULL\n    AND baseline_churn_probability IS NOT NULL\n    AND influenced_revenue_usd IS NOT NULL\n    AND influence_score IS NOT NULL\n    AND contagion_risk_score IS NOT NULL\n    AND run_id = (SELECT run_id FROM latest_run)\n)\nSELECT\n  cliente_mascarado,\n  risk_tier,\n  baseline_churn_probability,\n  influenced_revenue_usd,\n  influence_score,\n  contagion_risk_score,\n  high_risk_neighbour_pct,\n  recommended_action,\n  scored_at,\n  risk_rank\nFROM ranked_customers\nWHERE risk_rank <= 10\nORDER BY risk_rank, baseline_churn_probability DESC, influenced_revenue_usd DESC, influence_score DESC, contagion_risk_score DESC",
   "result": {
-    "latest_scoring_at_utc": "2026-09-08T21:49:24Z",
+    "latest_scoring_at_utc": "2026-09-08T21:49:24.968Z",
     "customer_identifiers": "MASKED",
+    "schema": [
+      "cliente_mascarado",
+      "risk_tier",
+      "baseline_churn_probability",
+      "influenced_revenue_usd",
+      "influence_score",
+      "contagion_risk_score",
+      "high_risk_neighbour_pct",
+      "recommended_action",
+      "scored_at",
+      "risk_rank"
+    ],
     "rows": [
       {
         "risk_rank": 1,
@@ -31,6 +43,9 @@
         "baseline_churn_probability": 0.9993,
         "influenced_revenue_usd": 564.65,
         "influence_score": 34.6,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -40,6 +55,9 @@
         "baseline_churn_probability": 0.9992,
         "influenced_revenue_usd": 1607.30,
         "influence_score": 39.4,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -49,6 +67,9 @@
         "baseline_churn_probability": 0.9989,
         "influenced_revenue_usd": 683.78,
         "influence_score": 53.4,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -58,6 +79,9 @@
         "baseline_churn_probability": 0.9984,
         "influenced_revenue_usd": 1548.23,
         "influence_score": 54.8,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -67,6 +91,9 @@
         "baseline_churn_probability": 0.9966,
         "influenced_revenue_usd": 2508.06,
         "influence_score": 88.2,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "INFLUENCER_CARE"
       },
       {
@@ -76,6 +103,9 @@
         "baseline_churn_probability": 0.9966,
         "influenced_revenue_usd": 1589.17,
         "influence_score": 74.1,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -85,6 +115,9 @@
         "baseline_churn_probability": 0.9957,
         "influenced_revenue_usd": 2325.67,
         "influence_score": 47.9,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -94,6 +127,9 @@
         "baseline_churn_probability": 0.9947,
         "influenced_revenue_usd": 1255.92,
         "influence_score": 65.5,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -103,6 +139,9 @@
         "baseline_churn_probability": 0.9945,
         "influenced_revenue_usd": 1182.25,
         "influence_score": 45.4,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       },
       {
@@ -112,11 +151,14 @@
         "baseline_churn_probability": 0.9928,
         "influenced_revenue_usd": 545.67,
         "influence_score": 29.6,
+        "contagion_risk_score": 0.0,
+        "high_risk_neighbour_pct": 0.0,
+        "scored_at": "2026-09-08T21:49:24.968Z",
         "recommended_action": "PROACTIVE_CONTACT"
       }
     ]
   },
-  "genie_response": "Con el último scoring disponible del 2026-09-08 21:49:24 UTC, los clientes con mayor potencial de abandono son todos HIGH, con probabilidad entre 0.9928 y 0.9993. Destaca ***3E93, con USD 2,508.06 de valor mensual influido y acción INFLUENCER_CARE; los demás están marcados para PROACTIVE_CONTACT.",
+  "genie_response": "Con el último scoring disponible del **2026-09-08 21:49:24 UTC**, los clientes con mayor potencial de abandono en esta muestra son todos de nivel **HIGH** y tienen una probabilidad base de churn entre **0.9928** y **0.9993**. Algunos valores representativos son:\n- **#1** **cliente ***8E83**: probabilidad **0.9993**, valor mensual influido **USD 564.65**, acción sugerida **PROACTIVE_CONTACT**\n- **#2** **cliente ***0A8E**: probabilidad **0.9992**, valor mensual influido **USD 1,607.30**, acción sugerida **PROACTIVE_CONTACT**\n- **#3** **cliente ***4D10**: probabilidad **0.9989**, valor mensual influido **USD 683.78**, acción sugerida **PROACTIVE_CONTACT**\n- **#4** **cliente ***CDDA**: probabilidad **0.9984**, valor mensual influido **USD 1,548.23**, acción sugerida **PROACTIVE_CONTACT**\n- **#5** **cliente ***3E93**: probabilidad **0.9966**, valor mensual influido **USD 2,508.06**, acción sugerida **INFLUENCER_CARE**\n\nComo señal adicional para priorización, en estos 10 casos el mayor valor mensual influido es **USD 2,508.06** y solo un cliente aparece con acción **INFLUENCER_CARE**; los demás están marcados para **PROACTIVE_CONTACT**.",
   "assertions": {
     "question_present": true,
     "generated_sql_present": true,
