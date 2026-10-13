@@ -2,7 +2,8 @@
 
 Este diretório registra provas textuais do App Quetzal que podem ser lidas,
 comparadas e auditadas sem depender de capturas de tela. A coleta final foi
-feita em `2026-10-12T19:03:21Z` no workspace FEVM da demonstração. Identidades
+consolidada em `2026-10-13T00:03:03Z` no workspace FEVM da demonstração.
+Identidades
 humanas foram substituídas por `[MASKED_DATABRICKS_ACTOR]`; nenhum token ou
 segredo foi persistido.
 

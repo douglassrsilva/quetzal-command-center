@@ -2,7 +2,7 @@
   "schema_version": "quetzal-genie-query-evidence-v1",
   "evidence_type": "historical_genie_query",
   "collection_mode": "READ_ONLY_HISTORY_REUSE",
-  "collected_at": "2026-10-12T21:30:00Z",
+  "collected_at": "2026-10-13T00:03:03Z",
   "workspace_host": "https://fevm-classic-stable-douglas-s.cloud.databricks.com",
   "genie_space": {
     "name": "Clientes",

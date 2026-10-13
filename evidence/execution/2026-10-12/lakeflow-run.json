@@ -2,7 +2,7 @@
   "schema_version": "quetzal-lakeflow-execution-evidence-v1",
   "evidence_type": "historical_lakeflow_run",
   "collection_mode": "READ_ONLY_HISTORY_REUSE",
-  "collected_at": "2026-10-12T21:30:00Z",
+  "collected_at": "2026-10-13T00:03:03Z",
   "workspace_host": "https://fevm-classic-stable-douglas-s.cloud.databricks.com",
   "pipeline": {
     "pipeline_id": "40ff188f-ea42-445e-93bf-4021193cfbe2",
