@@ -1,0 +1,39 @@
+command:
+  - python
+  - -m
+  - uvicorn
+  - app:app
+  - --host
+  - 0.0.0.0
+  - --port
+  - "8000"
+
+env:
+  - name: QUETZAL_RUNTIME
+    value: "published"
+  - name: QUETZAL_LOCAL_MODE
+    value: "false"
+  - name: DATABRICKS_WAREHOUSE_ID
+    value: "032931930451e566"
+  - name: QUETZAL_CATALOG
+    value: "classic_stable_douglas_s_catalog"
+  - name: QUETZAL_SCHEMA
+    value: "quetzal_telecom"
+  - name: QUETZAL_DASHBOARD_ID
+    value: "01f1a73df38b1c91b35a5f7ca8c8d732"
+  - name: QUETZAL_GENIE_INGRESOS_ID
+    value: "01f1a73aa3281f5c815254ce86ca7408"
+  - name: QUETZAL_GENIE_CLIENTES_ID
+    value: "01f1a73ad42a198b8b9d29e9a3d081c8"
+  - name: QUETZAL_GENIE_RED_ID
+    value: "01f1a73ad42a1a72b2a813a1a9198e82"
+  - name: QUETZAL_AI_MODEL
+    value: "classic_stable_douglas_s_catalog.quetzal_telecom.quetzal-telecom-asistente"
+  - name: APP_HOST
+    value: "https://fevm-classic-stable-douglas-s.cloud.databricks.com"
+  - name: WORKSPACE_ID
+    value: "7474654097678606"
+  - name: QUETZAL_SQL_TIMEOUT_SECONDS
+    value: "60"
+  - name: QUETZAL_SQL_CACHE_TTL_SECONDS
+    value: "30"

@@ -1,0 +1,42 @@
+Quetzal local validation evidence
+Collected: 2026-10-12
+
+pytest:
+Command: uv run --with-requirements requirements-dev.txt pytest -q
+Result: PASS
+Output: 114 passed, 1 warning in 0.98s
+Warning: StarletteDeprecationWarning for the TestClient httpx adapter.
+
+ruff:
+Command: uv run --with ruff ruff check app.py server tests scripts
+Result: PASS
+Output: All checks passed!
+
+frontend production build:
+Command: cd frontend && npm run build
+Result: PASS
+Vite: 7.3.6; 1845 modules transformed; built in 1.15s
+CSS: dist/assets/index-D22mCNim.css, 175.01 kB (31.36 kB gzip)
+JS: dist/assets/index-BcibBqN-.js, 542.51 kB (161.96 kB gzip)
+Warning: one minified chunk is above 500 kB; code splitting remains optional.
+
+Databricks Asset Bundle validation:
+Command: databricks bundle validate -t demo --profile vibe-coding
+Result: PASS
+Name: quetzal-command-center
+Target: demo
+Output: Validation OK!
+
+Evidence JSON syntax:
+Command: find evidence/execution/2026-10-12 -name '*.json' -exec jq empty {} +
+Result: PASS
+
+Read-only collector smoke:
+Result: PASS
+App deployment: 01f1c66f42181560b7e838842aad81ab / SUCCEEDED
+Preflight: READY
+Certified manifest: QDM-CFB18327A439
+Graph: SUCCEEDED
+Campaign: CANCELLED
+Migration: SUCCESS
+Published-model statement: SUCCEEDED

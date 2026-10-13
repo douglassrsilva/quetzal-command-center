@@ -1,0 +1,585 @@
+{
+  "config": {
+    "sample_questions": [
+      {"id": "30000000000000000000000000000001", "question": ["¿Qué mercados concentran mayor valor mensual en riesgo de churn?"]},
+      {"id": "30000000000000000000000000000002", "question": ["Compara churn, NPS y tickets por segmento y país."]},
+      {"id": "30000000000000000000000000000003", "question": ["¿Qué intervenciones proactivas priorizarías por perfil de riesgo?"]},
+      {"id": "30000000000000000000000000000004", "question": ["¿Qué grupos de relaciones concentran clientes de alto riesgo y mayor exposición relacional?"]},
+      {"id": "30000000000000000000000000000005", "question": ["Muéstrame alcance internacional, valor en relaciones y churn individual por mercado."]}
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "column_configs": [
+          {"column_name": "baseline_churn_probability", "enable_format_assistance": true},
+          {"column_name": "community_id", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "contagion_risk_score", "enable_format_assistance": true},
+          {"column_name": "customer_id", "enable_format_assistance": true},
+          {"column_name": "graph_churn_probability", "enable_format_assistance": true},
+          {"column_name": "graph_lift", "enable_format_assistance": true},
+          {"column_name": "influence_score", "enable_format_assistance": true},
+          {"column_name": "model_version", "enable_format_assistance": true},
+          {"column_name": "recommended_action", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "risk_tier", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "scored_at", "enable_format_assistance": true}
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_graph_predictions"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "antiguedad_dias",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churn_predicted",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churn_probability",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churned",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "credit_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "edad",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "facturas_vencidas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "gasto_mensual_total",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_ultimo",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "risk_tier",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "scored_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_activas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tickets_cancelacion",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_facturas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_tickets",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_predictions"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "avg_dias_atraso",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_gasto_mensual",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_risk_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_tickets",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "num_clientes",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "riesgo_bucket",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "ya_churned",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_churn_risk_summary"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "antiguedad_dias",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_dias_atraso",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churn_risk_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "credit_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "estado",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "gasto_mensual_total",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_ultimo",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "ratio_vencidas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "revenue_lifetime_est",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "scored_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segment",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segment_name",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_activas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_suscripciones",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_clv_segments"
+      },
+      {
+        "column_configs": [
+          {"column_name": "community_id", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "community_size", "enable_format_assistance": true},
+          {"column_name": "computed_at", "enable_format_assistance": true},
+          {"column_name": "contagion_risk_score", "enable_format_assistance": true},
+          {"column_name": "countries_reached", "enable_format_assistance": true},
+          {"column_name": "country", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "customer_id", "enable_format_assistance": true},
+          {"column_name": "high_risk_neighbour_pct", "enable_format_assistance": true},
+          {"column_name": "influence_score", "enable_format_assistance": true},
+          {"column_name": "influenced_revenue_usd", "enable_format_assistance": true},
+          {"column_name": "international_call_pct", "enable_format_assistance": true},
+          {"column_name": "neighbour_avg_churn_probability", "enable_format_assistance": true},
+          {"column_name": "segment_id", "enable_format_assistance": true},
+          {"column_name": "unique_contacts", "enable_format_assistance": true}
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_customer_graph_features"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "avg_csat",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_nps_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "csat_top2_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "detractores",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "mes",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_index",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "promotores",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_encuestas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_evaluaciones_csat",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_customer_satisfaction"
+      },
+      {
+        "column_configs": [
+          {"column_name": "avg_contagion_risk_score", "enable_format_assistance": true},
+          {"column_name": "avg_graph_churn_probability", "enable_format_assistance": true},
+          {"column_name": "avg_influence_score", "enable_format_assistance": true},
+          {"column_name": "community_id", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "computed_at", "enable_format_assistance": true},
+          {"column_name": "countries", "enable_entity_matching": true, "enable_format_assistance": true},
+          {"column_name": "customer_count", "enable_format_assistance": true},
+          {"column_name": "high_risk_customers", "enable_format_assistance": true},
+          {"column_name": "influenced_revenue_usd", "enable_format_assistance": true},
+          {"column_name": "international_call_pct", "enable_format_assistance": true},
+          {"column_name": "max_influence_score", "enable_format_assistance": true}
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_graph_community_summary"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "antiguedad_dias",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_csat",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_dias_atraso",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_monto_factura",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "canal_adquisicion",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churn_risk_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "churned",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "credit_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "edad",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "estado",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "facturas_vencidas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "gasto_mensual_total",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "max_dias_atraso",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_ultimo",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_activas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tickets_cancelacion",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_facturas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_recontactos",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_suscripciones",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_tickets",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_churn_features"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "acepta_marketing",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "antiguedad_dias",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "apellido_1",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "apellido_2",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "canal_adquisicion",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "credit_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "edad",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "email",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "estado",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha_alta",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha_nacimiento",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nombre",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nombre_completo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_ultimo",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "sexo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "telefono",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "canal_encuesta",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "categoria_nps",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha_encuesta",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "nps_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "respondida",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "score",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_nps"
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [{
+      "content": [
+        "Responde en el idioma de la pregunta: español latinoamericano o portugués de Brasil.",
+        "Todos los datos son sintéticos y demostrativos. Informa siempre la fecha máxima del scoring o período consultado.",
+        "No expongas nombre, email, teléfono ni identificadores completos. Usa únicamente agregaciones o referencias de cliente enmascaradas.",
+        "Distingue probabilidad de churn, churn observado e inferencia; no los presentes como equivalentes.",
+        "churn_risk_score es un alias legado de la regla synthetic_churn_propensity en datos demostrativos; no es probabilidad ML. La probabilidad de modelo se llama churn_probability y proviene de gold_churn_predictions con versión y run de MLflow.",
+        "En el pipeline DAB reconstruido, churn_probability estima el evento sintético de cancelación en los 30 días posteriores al feature snapshot. No extrapoles este horizonte a datos o modelos legados sin metadata.",
+        "Prioriza intervenciones por probabilidad, valor mensual, tickets, morosidad y NPS, explicando la evidencia.",
+        "No recomiendes contacto de marketing cuando no exista consentimiento verificable.",
+        "Graph Intelligence se ejecuta solo bajo demanda. Usa siempre el último run_id disponible y comunica computed_at o scored_at.",
+        "La única probabilidad de churn es baseline_churn_probability (0 a 1). En v3 graph_churn_probability existe solo como alias de compatibilidad y graph_lift es cero.",
+        "reach_score (alias legado influence_score) y network_exposure_score (alias legado contagion_risk_score) están en escala de 0 a 100; son señales operacionales, no probabilidades.",
+        "PageRank ponderado mide alcance. Personalized PageRank ponderado mide difusión de exposición. Ninguno demuestra contagio, influencia causal o mejora predictiva.",
+        "retention_priority_score es un ranking de trabajo de 0 a 100 y no debe presentarse como probabilidad.",
+        "Para análisis por comunidad usa gold_graph_community_summary. Para detalle agregado por mercado usa gold_customer_graph_features y gold_churn_graph_predictions sin revelar customer_id.",
+        "Si una métrica no existe, declara la limitación y no inventes valores."
+      ]
+    }]
+  },
+  "version": 2
+}

@@ -1,0 +1,22 @@
+{
+  "sources": [
+    "databricks jobs get-run 396073321799068",
+    "databricks jobs get-run-output 568152439079173",
+    "databricks jobs get-run-output 534711299962248"
+  ],
+  "observed_at": "2026-10-12T18:54:24Z",
+  "job": {
+    "job_id": 306060263452973,
+    "run_id": 396073321799068,
+    "name": "[demo] Quetzal | Migración Lakebase manual",
+    "trigger": "ONE_TIME",
+    "life_cycle_state": "TERMINATED",
+    "result_state": "SUCCESS",
+    "duration_ms": 66107
+  },
+  "tasks": [
+    {"task_key": "apply_retention_case_schema", "task_run_id": 568152439079173, "migration": "001_retention_cases", "status": "already_applied", "checksum": "ac885bca296a1e3d6cacdeb8df04512c1d52d346e1d0d2d01f4b35ac68b07bec", "result_state": "SUCCESS", "logs_truncated": false},
+    {"task_key": "apply_campaign_workflow_schema", "task_run_id": 534711299962248, "migration": "002_campaign_workflow", "status": "applied", "checksum": "d957fa177ccac4376ad120f0906e1c9f962fdb7dc735c9c427dec6a492e095b0", "result_state": "SUCCESS", "logs_truncated": false}
+  ],
+  "collection_effect": {"historical_run_read": true, "migration_rerun": false}
+}

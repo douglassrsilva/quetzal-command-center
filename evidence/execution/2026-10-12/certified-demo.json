@@ -1,0 +1,38 @@
+{
+  "source": "GET /api/demo/manifest?country=BR",
+  "observed_at": "2026-10-12T18:54:16.597758Z",
+  "available": true,
+  "certification": "CERTIFIED_DEMO_MANIFEST_V1",
+  "manifest_id": "QDM-CFB18327A439",
+  "synthetic_data": true,
+  "scenario": {
+    "country": "BR",
+    "incident_id": "NET-TWR-BR-00417",
+    "relationship_group_id": "COM-dd76661ae2",
+    "customer_id": "CLI-3E7DFC6AABDC",
+    "voice_of_customer_theme": "BILLING",
+    "offer_plan_id": "BND-FAM-01",
+    "campaign_objective": "RETENTION"
+  },
+  "steps": ["PREFLIGHT", "INCIDENT", "GRAPH", "CUSTOMER_360", "QUETZAL_IQ", "VOICE_OF_CUSTOMER", "CAMPAIGN_OPTIMIZER", "ECONOMIC_JOURNEY"],
+  "evidence": {
+    "app_version": "3.0.0",
+    "churn_model_version": "3",
+    "churn_model_run_id": "c4956b5425bf4cde922157263db7bea9",
+    "graph_model_version": "graph-intelligence-v3-ontobricks",
+    "graph_run_id": "04c290e225184d98a8b041c4f2e14316",
+    "voc_version": "voc-rules-v1",
+    "campaign_version": "campaign-rules-v1",
+    "warnings": [],
+    "complete": true
+  },
+  "safety": {
+    "read_only": true,
+    "backend_mutations": false,
+    "paid_inference_used": false,
+    "job_triggered": false,
+    "campaign_sent": false,
+    "human_approval_required": true,
+    "manual_only_jobs": ["Graph Intelligence", "OntoBricks build", "Lakeflow", "ML refresh"]
+  }
+}

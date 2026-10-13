@@ -1,0 +1,82 @@
+@prefix qz: <https://quetzal.demo/ontology/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ontobricks: <http://ontobricks.com/schema#> .
+
+<https://quetzal.demo/ontology> a owl:Ontology ;
+  owl:versionInfo "1.0.0" ;
+  rdfs:label "Grafo de conocimiento Quetzal Telecom"@es ;
+  rdfs:comment "Ontología gobernada de clientes, servicio, relaciones calificadas y decisiones de retención. Las relaciones observadas no demuestran causalidad de churn ni vínculos personales."@es .
+
+qz:Customer a owl:Class ;
+  rdfs:label "Cliente"@es ;
+  rdfs:comment "Suscriptor representado con identificador y nombre enmascarados en la proyección semántica."@es ;
+  ontobricks:icon "👤" .
+qz:QualifiedContact a owl:Class ;
+  rdfs:label "Contacto calificado"@es ;
+  rdfs:comment "Relación observada por recurrencia, duración, reciprocidad y vigencia; no implica relación personal ni influencia causal."@es ;
+  ontobricks:icon "🔗" .
+qz:RelationshipGroup a owl:Class ;
+  rdfs:label "Grupo de relaciones"@es ;
+  rdfs:comment "Agrupación algorítmica para explorar clientes conectados; no es una comunidad social declarada."@es ;
+  ontobricks:icon "🕸️" .
+qz:Country a owl:Class ; rdfs:label "País"@es ; ontobricks:icon "🌎" .
+qz:Plan a owl:Class ; rdfs:label "Plan"@es ; ontobricks:icon "📱" .
+qz:Product a owl:Class ; rdfs:label "Producto"@es ; ontobricks:icon "📦" .
+qz:Ticket a owl:Class ; rdfs:label "Ticket de atención"@es ; ontobricks:icon "🎧" .
+qz:SLA a owl:Class ; rdfs:label "Compromiso de SLA"@es ; ontobricks:icon "⏱️" .
+qz:Recommendation a owl:Class ; rdfs:label "Recomendación"@es ; ontobricks:icon "💡" .
+
+qz:qualifiedContact a owl:ObjectProperty, owl:SymmetricProperty ;
+  rdfs:label "tiene contacto calificado"@es ;
+  rdfs:domain qz:Customer ; rdfs:range qz:Customer ;
+  rdfs:comment "Atajo navegable entre clientes. Los atributos auditables permanecen en la entidad reificada Contacto calificado."@es .
+qz:contactSource a owl:ObjectProperty ;
+  rdfs:label "cliente de origen"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range qz:Customer .
+qz:contactTarget a owl:ObjectProperty ;
+  rdfs:label "cliente de destino"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range qz:Customer .
+qz:locatedIn a owl:ObjectProperty ;
+  rdfs:label "se encuentra en"@es ; rdfs:domain qz:Customer ; rdfs:range qz:Country .
+qz:memberOfRelationshipGroup a owl:ObjectProperty ;
+  rdfs:label "pertenece al grupo de relaciones"@es ; rdfs:domain qz:Customer ; rdfs:range qz:RelationshipGroup .
+qz:subscribedTo a owl:ObjectProperty ;
+  rdfs:label "suscrito al plan"@es ; rdfs:domain qz:Customer ; rdfs:range qz:Plan .
+qz:openedBy a owl:ObjectProperty ;
+  rdfs:label "abierto por"@es ; rdfs:domain qz:Ticket ; rdfs:range qz:Customer .
+qz:governedBySLA a owl:ObjectProperty ;
+  rdfs:label "regido por SLA"@es ; rdfs:domain qz:Customer ; rdfs:range qz:SLA .
+qz:proposedFor a owl:ObjectProperty ;
+  rdfs:label "propuesta para"@es ; rdfs:domain qz:Recommendation ; rdfs:range qz:Customer .
+qz:recommendsProduct a owl:ObjectProperty ;
+  rdfs:label "recomienda producto"@es ; rdfs:domain qz:Recommendation ; rdfs:range qz:Product .
+qz:recommendedProduct a owl:ObjectProperty ;
+  rdfs:label "producto recomendado"@es ; rdfs:domain qz:Customer ; rdfs:range qz:Product .
+
+qz:baselineChurnProbability a owl:DatatypeProperty ;
+  rdfs:label "probabilidad individual de churn"@es ;
+  rdfs:comment "Única probabilidad de churn del cliente, producida por el modelo individual."@es ;
+  rdfs:domain qz:Customer ; rdfs:range xsd:double .
+qz:retentionPriorityScore a owl:DatatypeProperty ;
+  rdfs:label "prioridad de retención"@es ;
+  rdfs:comment "Puntuación operacional de 0 a 100; no es una probabilidad."@es ;
+  rdfs:domain qz:Customer ; rdfs:range xsd:double .
+qz:networkReachScore a owl:DatatypeProperty ;
+  rdfs:label "alcance en la red"@es ;
+  rdfs:comment "Percentil compuesto que incluye PageRank ponderado; no representa influencia causal."@es ;
+  rdfs:domain qz:Customer ; rdfs:range xsd:double .
+qz:networkExposureScore a owl:DatatypeProperty ;
+  rdfs:label "exposición relacional"@es ;
+  rdfs:comment "Señal de 0 a 100 derivada del riesgo de los contactos y de Personalized PageRank; no es una probabilidad de contagio."@es ;
+  rdfs:domain qz:Customer ; rdfs:range xsd:double .
+qz:callCount a owl:DatatypeProperty ;
+  rdfs:label "cantidad de llamadas"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range xsd:long .
+qz:contactMinutes a owl:DatatypeProperty ;
+  rdfs:label "minutos de contacto"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range xsd:double .
+qz:relationshipWeight a owl:DatatypeProperty ;
+  rdfs:label "peso de la relación"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range xsd:double .
+qz:isReciprocal a owl:DatatypeProperty ;
+  rdfs:label "es recíproca"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range xsd:boolean .
+qz:qualificationReason a owl:DatatypeProperty ;
+  rdfs:label "motivo de calificación"@es ; rdfs:domain qz:QualifiedContact ; rdfs:range xsd:string .

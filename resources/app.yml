@@ -1,0 +1,129 @@
+resources:
+  postgres_databases:
+    quetzal_ltap_database:
+      database_id: ${var.lakebase_database_resource_id}
+      parent: projects/${var.lakebase_project}/branches/${var.lakebase_branch}
+      postgres_database: ${var.lakebase_database}
+      role: ${var.lakebase_owner_role}
+      replace_existing: true
+      lifecycle:
+        prevent_destroy: true
+
+  apps:
+    quetzal_app:
+      name: ${var.app_name}
+      description: Quetzal Telecom · centro de comando operacional e inteligência governada
+      source_code_path: ..
+      lifecycle:
+        started: true
+        prevent_destroy: true
+      user_api_scopes:
+        - sql
+        - genie
+        - ai-gateway
+      config:
+        command: ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+        env:
+          - name: QUETZAL_RUNTIME
+            value: published
+          - name: QUETZAL_LOCAL_MODE
+            value: "false"
+          - name: QUETZAL_CATALOG
+            value: ${var.catalog}
+          - name: QUETZAL_SCHEMA
+            value: ${var.schema}
+          - name: DATABRICKS_WAREHOUSE_ID
+            value: ${var.sql_warehouse_id}
+          - name: WORKSPACE_ID
+            value: ${var.workspace_id}
+          - name: QUETZAL_DASHBOARD_ID
+            value: ${resources.dashboards.quetzal_executive.id}
+          - name: QUETZAL_AI_MODEL
+            value: ${var.ai_model}
+          - name: QUETZAL_GENIE_INGRESOS_ID
+            value: ${resources.genie_spaces.quetzal_genie_ingresos.id}
+          - name: QUETZAL_GENIE_CLIENTES_ID
+            value: ${resources.genie_spaces.quetzal_genie_clientes.id}
+          - name: QUETZAL_GENIE_RED_ID
+            value: ${resources.genie_spaces.quetzal_genie_red.id}
+          - name: QUETZAL_SQL_TIMEOUT_SECONDS
+            value: "90"
+          - name: QUETZAL_SQL_CACHE_TTL_SECONDS
+            value: "30"
+          - name: QUETZAL_ADMIN_USERS
+            value: ${var.admin_users}
+          - name: QUETZAL_LAKEBASE_PROJECT
+            value: ${var.lakebase_project}
+          - name: QUETZAL_LAKEBASE_BRANCH
+            value: ${var.lakebase_branch}
+          - name: QUETZAL_LAKEBASE_ENDPOINT
+            value: ${var.lakebase_endpoint}
+          - name: QUETZAL_LAKEBASE_DATABASE
+            value: ${var.lakebase_database}
+          - name: QUETZAL_LAKEBASE_HOST
+            value: ${var.lakebase_host}
+          - name: QUETZAL_LAKEBASE_USER
+            value: ${var.lakebase_app_principal}
+          - name: QUETZAL_LAKEBASE_REQUIRED
+            value: "false"
+          - name: QUETZAL_MANAGED_MEMORY_STORE
+            value: ${var.managed_memory_store}
+          - name: QUETZAL_GRAPH_JOB_ID
+            value: ${resources.jobs.quetzal_graph_intelligence.id}
+          - name: QUETZAL_ONTOBRICKS_URL
+            value: ${var.ontobricks_url}
+          - name: QUETZAL_ONTOBRICKS_MCP_URL
+            value: ${var.ontobricks_mcp_url}
+          - name: QUETZAL_ONTOBRICKS_DOMAIN
+            value: ${var.ontobricks_domain}
+          - name: QUETZAL_ONTOBRICKS_VERSION
+            value: ${var.ontobricks_version}
+          - name: QUETZAL_CRM_WEBHOOK_URL
+            value: ${var.crm_webhook_url}
+          - name: QUETZAL_OSS_WEBHOOK_URL
+            value: ${var.oss_webhook_url}
+          - name: QUETZAL_BSS_WEBHOOK_URL
+            value: ${var.bss_webhook_url}
+      resources:
+        - name: lakebase
+          description: Memoria del Quetzal IQ y fuente operacional de casos, SLA, aprobación y auditoría de retención
+          postgres:
+            branch: projects/${var.lakebase_project}/branches/${var.lakebase_branch}
+            database: projects/${var.lakebase_project}/branches/${var.lakebase_branch}/databases/${resources.postgres_databases.quetzal_ltap_database.database_id}
+            permission: CAN_CONNECT_AND_CREATE
+        - name: analytics-warehouse
+          description: Consultas analíticas e estado operacional do Quetzal
+          sql_warehouse:
+            id: ${var.sql_warehouse_id}
+            permission: CAN_USE
+        - name: ontobricks-mcp
+          description: Consultas semánticas read-only de Quetzal IQ mediante MCP
+          app:
+            name: ${var.ontobricks_mcp_app_name}
+            permission: CAN_USE
+        - name: genie-ingresos
+          description: Inteligência de receita e cobrança
+          genie_space:
+            name: genie-ingresos
+            space_id: ${resources.genie_spaces.quetzal_genie_ingresos.id}
+            permission: CAN_RUN
+        - name: genie-clientes
+          description: Inteligência de clientes e retenção
+          genie_space:
+            name: genie-clientes
+            space_id: ${resources.genie_spaces.quetzal_genie_clientes.id}
+            permission: CAN_RUN
+        - name: genie-red
+          description: Inteligência operacional de rede
+          genie_space:
+            name: genie-red
+            space_id: ${resources.genie_spaces.quetzal_genie_red.id}
+            permission: CAN_RUN
+        - name: graph-intelligence-job
+          description: Snapshot relacional y scoring de grafo ejecutados únicamente bajo demanda
+          job:
+            id: ${resources.jobs.quetzal_graph_intelligence.id}
+            permission: CAN_MANAGE_RUN
+      permissions:
+        - level: CAN_USE
+          group_name: users

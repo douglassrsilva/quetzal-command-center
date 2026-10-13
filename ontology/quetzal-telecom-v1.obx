@@ -1,0 +1,738 @@
+{
+  "format_version": 1,
+  "ontobricks_version": "0.8.1",
+  "min_ontobricks_version": "0.8.1",
+  "exported_at": "2026-10-11T00:00:00Z",
+  "exported_by": "quetzal-dab",
+  "domains": [
+    {
+      "name": "quetzal_telecom",
+      "info": {
+        "name": "Quetzal Telecom",
+        "description": "Grafo semántico gobernado para inteligencia de clientes y retención en telecomunicaciones.",
+        "author": "Quetzal",
+        "llm_endpoint": "",
+        "mcp_enabled": true,
+        "status": "DRAFT",
+        "review_quorum": 1,
+        "mcp_policy": {},
+        "graph_backend": "databricks",
+        "neo4j_connection": "",
+        "lakehouse_materialization": "table",
+        "last_update": "",
+        "last_build": ""
+      },
+      "versions": {
+        "1": {
+          "info": {
+            "name": "Quetzal Telecom",
+            "description": "Grafo semántico gobernado para inteligencia de clientes y retención en telecomunicaciones.",
+            "author": "Quetzal",
+            "llm_endpoint": "",
+            "mcp_enabled": true,
+            "status": "DRAFT",
+            "review_quorum": 1,
+            "mcp_policy": {},
+            "graph_backend": "databricks",
+            "neo4j_connection": "",
+            "lakehouse_materialization": "table",
+            "last_update": "",
+            "last_build": ""
+          },
+          "versions": {
+            "1": {
+              "ontology": {
+                "name": "Quetzal Telecom",
+                "base_uri": "https://quetzal.demo/ontology/",
+                "base_uri_auto": false,
+                "description": "Grafo semántico gobernado para inteligencia de clientes y retención en telecomunicaciones.",
+                "classes": [
+                  {
+                    "uri": "https://quetzal.demo/ontology/Customer",
+                    "name": "Customer",
+                    "label": "Cliente",
+                    "comment": "Suscriptor con identidad enmascarada.",
+                    "emoji": "👤",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": [
+                      {
+                        "name": "baselineChurnProbability",
+                        "localName": "baselineChurnProbability",
+                        "label": "probabilidad individual de churn",
+                        "uri": "https://quetzal.demo/ontology/baselineChurnProbability"
+                      },
+                      {
+                        "name": "retentionPriorityScore",
+                        "localName": "retentionPriorityScore",
+                        "label": "prioridad de retención",
+                        "uri": "https://quetzal.demo/ontology/retentionPriorityScore"
+                      },
+                      {
+                        "name": "networkReachScore",
+                        "localName": "networkReachScore",
+                        "label": "alcance en la red",
+                        "uri": "https://quetzal.demo/ontology/networkReachScore"
+                      },
+                      {
+                        "name": "networkExposureScore",
+                        "localName": "networkExposureScore",
+                        "label": "exposición relacional",
+                        "uri": "https://quetzal.demo/ontology/networkExposureScore"
+                      }
+                    ]
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/QualifiedContact",
+                    "name": "QualifiedContact",
+                    "label": "Contacto calificado",
+                    "comment": "Relación observada, calificada y auditable.",
+                    "emoji": "🔗",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": [
+                      {
+                        "name": "callCount",
+                        "localName": "callCount",
+                        "label": "cantidad de llamadas",
+                        "uri": "https://quetzal.demo/ontology/callCount"
+                      },
+                      {
+                        "name": "contactMinutes",
+                        "localName": "contactMinutes",
+                        "label": "minutos de contacto",
+                        "uri": "https://quetzal.demo/ontology/contactMinutes"
+                      },
+                      {
+                        "name": "relationshipWeight",
+                        "localName": "relationshipWeight",
+                        "label": "peso de la relación",
+                        "uri": "https://quetzal.demo/ontology/relationshipWeight"
+                      },
+                      {
+                        "name": "isReciprocal",
+                        "localName": "isReciprocal",
+                        "label": "es recíproca",
+                        "uri": "https://quetzal.demo/ontology/isReciprocal"
+                      },
+                      {
+                        "name": "qualificationReason",
+                        "localName": "qualificationReason",
+                        "label": "motivo de calificación",
+                        "uri": "https://quetzal.demo/ontology/qualificationReason"
+                      }
+                    ]
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/RelationshipGroup",
+                    "name": "RelationshipGroup",
+                    "label": "Grupo de relaciones",
+                    "comment": "Agrupación algorítmica de clientes conectados.",
+                    "emoji": "🕸️",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/Country",
+                    "name": "Country",
+                    "label": "País",
+                    "comment": "País de operación del cliente.",
+                    "emoji": "🌎",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/Plan",
+                    "name": "Plan",
+                    "label": "Plan",
+                    "comment": "Plan de telecomunicaciones contratado.",
+                    "emoji": "📱",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/Product",
+                    "name": "Product",
+                    "label": "Producto",
+                    "comment": "Producto elegible para recomendación.",
+                    "emoji": "📦",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/Ticket",
+                    "name": "Ticket",
+                    "label": "Ticket de atención",
+                    "comment": "Caso de atención abierto.",
+                    "emoji": "🎧",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/SLA",
+                    "name": "SLA",
+                    "label": "Compromiso de SLA",
+                    "comment": "Política de nivel de servicio aplicable.",
+                    "emoji": "⏱️",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/Recommendation",
+                    "name": "Recommendation",
+                    "label": "Recomendación",
+                    "comment": "Acción o producto sugerido para el cliente.",
+                    "emoji": "💡",
+                    "parent": "",
+                    "group": "",
+                    "dashboard": "",
+                    "dashboardParams": {},
+                    "bridges": [],
+                    "dataset": null,
+                    "actions": [],
+                    "virtualAttributes": [],
+                    "dataProperties": []
+                  }
+                ],
+                "properties": [
+                  {
+                    "uri": "https://quetzal.demo/ontology/qualifiedContact",
+                    "name": "qualifiedContact",
+                    "label": "tiene contacto calificado",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "Customer"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/contactSource",
+                    "name": "contactSource",
+                    "label": "cliente de origen",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "QualifiedContact",
+                    "range": "Customer"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/contactTarget",
+                    "name": "contactTarget",
+                    "label": "cliente de destino",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "QualifiedContact",
+                    "range": "Customer"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/locatedIn",
+                    "name": "locatedIn",
+                    "label": "se encuentra en",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "Country"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/memberOfRelationshipGroup",
+                    "name": "memberOfRelationshipGroup",
+                    "label": "pertenece al grupo de relaciones",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "RelationshipGroup"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/subscribedTo",
+                    "name": "subscribedTo",
+                    "label": "suscrito al plan",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "Plan"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/openedBy",
+                    "name": "openedBy",
+                    "label": "abierto por",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Ticket",
+                    "range": "Customer"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/governedBySLA",
+                    "name": "governedBySLA",
+                    "label": "regido por SLA",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "SLA"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/proposedFor",
+                    "name": "proposedFor",
+                    "label": "propuesta para",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Recommendation",
+                    "range": "Customer"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/recommendsProduct",
+                    "name": "recommendsProduct",
+                    "label": "recomienda producto",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Recommendation",
+                    "range": "Product"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/recommendedProduct",
+                    "name": "recommendedProduct",
+                    "label": "producto recomendado",
+                    "comment": "",
+                    "type": "ObjectProperty",
+                    "domain": "Customer",
+                    "range": "Product"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/baselineChurnProbability",
+                    "name": "baselineChurnProbability",
+                    "label": "probabilidad individual de churn",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "Customer",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/retentionPriorityScore",
+                    "name": "retentionPriorityScore",
+                    "label": "prioridad de retención",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "Customer",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/networkReachScore",
+                    "name": "networkReachScore",
+                    "label": "alcance en la red",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "Customer",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/networkExposureScore",
+                    "name": "networkExposureScore",
+                    "label": "exposición relacional",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "Customer",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/callCount",
+                    "name": "callCount",
+                    "label": "cantidad de llamadas",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "QualifiedContact",
+                    "range": "xsd:long"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/contactMinutes",
+                    "name": "contactMinutes",
+                    "label": "minutos de contacto",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "QualifiedContact",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/relationshipWeight",
+                    "name": "relationshipWeight",
+                    "label": "peso de la relación",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "QualifiedContact",
+                    "range": "xsd:double"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/isReciprocal",
+                    "name": "isReciprocal",
+                    "label": "es recíproca",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "QualifiedContact",
+                    "range": "xsd:boolean"
+                  },
+                  {
+                    "uri": "https://quetzal.demo/ontology/qualificationReason",
+                    "name": "qualificationReason",
+                    "label": "motivo de calificación",
+                    "comment": "",
+                    "type": "DatatypeProperty",
+                    "domain": "QualifiedContact",
+                    "range": "xsd:string"
+                  }
+                ],
+                "constraints": [
+                  {
+                    "type": "symmetric",
+                    "property": "qualifiedContact",
+                    "propertyUri": "https://quetzal.demo/ontology/qualifiedContact"
+                  }
+                ],
+                "shacl_shapes": [],
+                "swrl_rules": [],
+                "decision_tables": [],
+                "sparql_rules": [],
+                "aggregate_rules": [],
+                "cohort_rules": [],
+                "axioms": [],
+                "expressions": [],
+                "groups": []
+              },
+              "assignment": {
+                "entities": [
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Customer",
+                    "ontology_class_label": "Customer",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/baselineChurnProbability', 'https://quetzal.demo/ontology#baselineChurnProbability') THEN object END) AS DOUBLE) AS baseline_churn_probability,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/retentionPriorityScore', 'https://quetzal.demo/ontology#retentionPriorityScore') THEN object END) AS DOUBLE) AS retention_priority_score,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/networkReachScore', 'https://quetzal.demo/ontology#networkReachScore') THEN object END) AS DOUBLE) AS network_reach_score,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/networkExposureScore', 'https://quetzal.demo/ontology#networkExposureScore') THEN object END) AS DOUBLE) AS network_exposure_score\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Customer', 'https://quetzal.demo/ontology#Customer') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {
+                      "baselineChurnProbability": "baseline_churn_probability",
+                      "retentionPriorityScore": "retention_priority_score",
+                      "networkReachScore": "network_reach_score",
+                      "networkExposureScore": "network_exposure_score"
+                    },
+                    "excluded_attributes": [],
+                    "description": "Cliente"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/QualifiedContact",
+                    "ontology_class_label": "QualifiedContact",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/callCount', 'https://quetzal.demo/ontology#callCount') THEN object END) AS BIGINT) AS call_count,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/contactMinutes', 'https://quetzal.demo/ontology#contactMinutes') THEN object END) AS DOUBLE) AS contact_minutes,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/relationshipWeight', 'https://quetzal.demo/ontology#relationshipWeight') THEN object END) AS DOUBLE) AS relationship_weight,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/isReciprocal', 'https://quetzal.demo/ontology#isReciprocal') THEN object END) AS BOOLEAN) AS is_reciprocal,\n       TRY_CAST(MAX(CASE WHEN predicate IN ('https://quetzal.demo/ontology/qualificationReason', 'https://quetzal.demo/ontology#qualificationReason') THEN object END) AS STRING) AS qualification_reason\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/QualifiedContact', 'https://quetzal.demo/ontology#QualifiedContact') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {
+                      "callCount": "call_count",
+                      "contactMinutes": "contact_minutes",
+                      "relationshipWeight": "relationship_weight",
+                      "isReciprocal": "is_reciprocal",
+                      "qualificationReason": "qualification_reason"
+                    },
+                    "excluded_attributes": [],
+                    "description": "Contacto calificado"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/RelationshipGroup",
+                    "ontology_class_label": "RelationshipGroup",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/RelationshipGroup', 'https://quetzal.demo/ontology#RelationshipGroup') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Grupo de relaciones"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Country",
+                    "ontology_class_label": "Country",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Country', 'https://quetzal.demo/ontology#Country') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "País"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Plan",
+                    "ontology_class_label": "Plan",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Plan', 'https://quetzal.demo/ontology#Plan') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Plan"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Product",
+                    "ontology_class_label": "Product",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Product', 'https://quetzal.demo/ontology#Product') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Producto"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Ticket",
+                    "ontology_class_label": "Ticket",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Ticket', 'https://quetzal.demo/ontology#Ticket') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Ticket de atención"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/SLA",
+                    "ontology_class_label": "SLA",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/SLA', 'https://quetzal.demo/ontology#SLA') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Compromiso de SLA"
+                  },
+                  {
+                    "ontology_class": "https://quetzal.demo/ontology/Recommendation",
+                    "ontology_class_label": "Recommendation",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS ID,\n       COALESCE(MAX(CASE WHEN predicate = 'http://www.w3.org/2000/01/rdf-schema#label' THEN object END), regexp_extract(subject, '.*/([^/]+)$', 1)) AS Label\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nGROUP BY subject\nHAVING MAX(CASE WHEN predicate = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' AND object IN ('https://quetzal.demo/ontology/Recommendation', 'https://quetzal.demo/ontology#Recommendation') THEN 1 ELSE 0 END) = 1",
+                    "id_column": "ID",
+                    "label_column": "Label",
+                    "catalog": "classic_stable_douglas_s_catalog",
+                    "schema": "quetzal_telecom",
+                    "table": "gold_quetzal_knowledge_graph_triples",
+                    "attribute_mappings": {},
+                    "excluded_attributes": [],
+                    "description": "Recomendación"
+                  }
+                ],
+                "relationships": [
+                  {
+                    "property": "https://quetzal.demo/ontology/qualifiedContact",
+                    "property_label": "tiene contacto calificado",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/qualifiedContact', 'https://quetzal.demo/ontology#qualifiedContact') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/Customer",
+                    "target_class_label": "Customer",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/contactSource",
+                    "property_label": "cliente de origen",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/contactSource', 'https://quetzal.demo/ontology#contactSource') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/QualifiedContact",
+                    "source_class_label": "QualifiedContact",
+                    "target_class": "https://quetzal.demo/ontology/Customer",
+                    "target_class_label": "Customer",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/contactTarget",
+                    "property_label": "cliente de destino",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/contactTarget', 'https://quetzal.demo/ontology#contactTarget') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/QualifiedContact",
+                    "source_class_label": "QualifiedContact",
+                    "target_class": "https://quetzal.demo/ontology/Customer",
+                    "target_class_label": "Customer",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/locatedIn",
+                    "property_label": "se encuentra en",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/locatedIn', 'https://quetzal.demo/ontology#locatedIn') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/Country",
+                    "target_class_label": "Country",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/memberOfRelationshipGroup",
+                    "property_label": "pertenece al grupo de relaciones",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/memberOfRelationshipGroup', 'https://quetzal.demo/ontology#memberOfRelationshipGroup') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/RelationshipGroup",
+                    "target_class_label": "RelationshipGroup",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/subscribedTo",
+                    "property_label": "suscrito al plan",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/subscribedTo', 'https://quetzal.demo/ontology#subscribedTo') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/Plan",
+                    "target_class_label": "Plan",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/openedBy",
+                    "property_label": "abierto por",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/openedBy', 'https://quetzal.demo/ontology#openedBy') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Ticket",
+                    "source_class_label": "Ticket",
+                    "target_class": "https://quetzal.demo/ontology/Customer",
+                    "target_class_label": "Customer",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/governedBySLA",
+                    "property_label": "regido por SLA",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/governedBySLA', 'https://quetzal.demo/ontology#governedBySLA') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/SLA",
+                    "target_class_label": "SLA",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/proposedFor",
+                    "property_label": "propuesta para",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/proposedFor', 'https://quetzal.demo/ontology#proposedFor') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Recommendation",
+                    "source_class_label": "Recommendation",
+                    "target_class": "https://quetzal.demo/ontology/Customer",
+                    "target_class_label": "Customer",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/recommendsProduct",
+                    "property_label": "recomienda producto",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/recommendsProduct', 'https://quetzal.demo/ontology#recommendsProduct') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Recommendation",
+                    "source_class_label": "Recommendation",
+                    "target_class": "https://quetzal.demo/ontology/Product",
+                    "target_class_label": "Product",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  },
+                  {
+                    "property": "https://quetzal.demo/ontology/recommendedProduct",
+                    "property_label": "producto recomendado",
+                    "sql_query": "SELECT regexp_extract(subject, '.*/([^/]+)$', 1) AS source_id,\n       regexp_extract(object, '.*/([^/]+)$', 1) AS target_id\nFROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_quetzal_knowledge_graph_triples\nWHERE predicate IN ('https://quetzal.demo/ontology/recommendedProduct', 'https://quetzal.demo/ontology#recommendedProduct') AND object_is_iri = true",
+                    "source_class": "https://quetzal.demo/ontology/Customer",
+                    "source_class_label": "Customer",
+                    "target_class": "https://quetzal.demo/ontology/Product",
+                    "target_class_label": "Product",
+                    "source_id_column": "source_id",
+                    "target_id_column": "target_id",
+                    "direction": "forward",
+                    "attribute_mappings": {}
+                  }
+                ]
+              },
+              "design_layout": {
+                "current_view": "default",
+                "views": {},
+                "map": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

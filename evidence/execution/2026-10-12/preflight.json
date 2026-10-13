@@ -1,0 +1,17 @@
+{
+  "source": "GET /api/demo/preflight",
+  "observed_at": "2026-10-12T18:54:10.690933Z",
+  "status": "READY",
+  "execution": {"mode": "MANUAL_READ_ONLY", "paid_inference_used": false, "job_triggered": false},
+  "checks": [
+    {"name": "warehouse", "status": "READY", "detail": {"warehouse_id": "032931930451e566", "connectivity": "SQL_OK"}},
+    {"name": "genie", "status": "READY", "detail": {"spaces": ["ingresos", "clientes", "red"], "validation": "RESOURCE_METADATA_ONLY_NO_QUERY"}},
+    {"name": "ai_gateway", "status": "READY", "detail": {"model": "classic_stable_douglas_s_catalog.quetzal_telecom.quetzal-telecom-asistente", "validation_mode": "CONFIGURATION_ONLY"}},
+    {"name": "lakebase", "status": "READY", "detail": {"database": "quetzal", "connectivity": "POSTGRES_OK", "retention_schema": "001_retention_cases", "campaign_schema": "002_campaign_workflow"}},
+    {"name": "managed_memory", "status": "READY", "detail": {"store": "classic_stable_douglas_s_catalog.quetzal_telecom.quetzal_iq_memory", "probe": "METADATA_ONLY"}},
+    {"name": "dashboard", "status": "READY", "detail": {"dashboard_id": "01f1a73df38b1c91b35a5f7ca8c8d732", "probe": "METADATA_ONLY"}},
+    {"name": "rbac", "status": "READY", "detail": {"actor": "[MASKED_DATABRICKS_ACTOR]", "roles": ["ACTION_APPROVER", "ADMIN", "CARE_AGENT", "EXECUTIVE_VIEWER", "NOC_OPERATOR"], "country_scope": ["ALL"]}},
+    {"name": "graph_snapshot", "status": "READY", "detail": {"run_id": "04c290e225184d98a8b041c4f2e14316", "workflow_run_id": "635974993711924", "model_version": "graph-intelligence-v3-ontobricks", "status": "SUCCEEDED", "node_count": 60000, "qualified_directed_edges": 198671, "community_count": 36303, "source_triple_count": 1571631, "generation_seed": 42}},
+    {"name": "ontobricks", "status": "READY", "detail": {"domain": "quetzal_telecom", "release": "0.8.1+b7dc8798dee5351ccc146cb32f90976d13287535", "domain_version": "1", "domain_status": "PUBLISHED", "has_graph": true, "materialized_triples": 1637100, "graphql_ready": true}}
+  ]
+}

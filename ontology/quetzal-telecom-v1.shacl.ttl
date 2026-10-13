@@ -1,0 +1,40 @@
+@prefix qz: <https://quetzal.demo/ontology/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+qz:CustomerShape a sh:NodeShape ;
+  sh:targetClass qz:Customer ;
+  sh:closed false ;
+  sh:property [
+    sh:path qz:baselineChurnProbability ;
+    sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 1 ;
+    sh:message "La probabilidad individual de churn debe estar entre 0 y 1."@es
+  ] ;
+  sh:property [
+    sh:path qz:retentionPriorityScore ;
+    sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 100 ;
+    sh:message "La prioridad de retención debe estar entre 0 y 100."@es
+  ] ;
+  sh:property [
+    sh:path qz:networkReachScore ;
+    sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 100 ;
+    sh:message "El alcance en la red debe estar entre 0 y 100."@es
+  ] ;
+  sh:property [
+    sh:path qz:networkExposureScore ;
+    sh:maxCount 1 ; sh:minInclusive 0 ; sh:maxInclusive 100 ;
+    sh:message "La exposición relacional debe estar entre 0 y 100."@es
+  ] .
+
+qz:QualifiedContactShape a sh:NodeShape ;
+  sh:targetClass qz:QualifiedContact ;
+  sh:property [ sh:path qz:contactSource ; sh:minCount 1 ; sh:maxCount 1 ; sh:class qz:Customer ] ;
+  sh:property [ sh:path qz:contactTarget ; sh:minCount 1 ; sh:maxCount 1 ; sh:class qz:Customer ] ;
+  sh:property [ sh:path qz:callCount ; sh:maxCount 1 ; sh:minInclusive 1 ; sh:datatype xsd:long ] ;
+  sh:property [ sh:path qz:contactMinutes ; sh:maxCount 1 ; sh:minInclusive 0 ; sh:datatype xsd:double ] ;
+  sh:property [ sh:path qz:relationshipWeight ; sh:maxCount 1 ; sh:minExclusive 0 ; sh:datatype xsd:double ] .
+
+qz:RecommendationShape a sh:NodeShape ;
+  sh:targetClass qz:Recommendation ;
+  sh:property [ sh:path qz:proposedFor ; sh:minCount 1 ; sh:maxCount 1 ; sh:class qz:Customer ] ;
+  sh:property [ sh:path qz:recommendsProduct ; sh:maxCount 1 ; sh:class qz:Product ] .

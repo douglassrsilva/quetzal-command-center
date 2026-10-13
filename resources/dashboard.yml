@@ -1,0 +1,13 @@
+resources:
+  dashboards:
+    quetzal_executive:
+      display_name: Panel Ejecutivo — Quetzal Telecom
+      file_path: ../dashboards/quetzal_executive.lvdash.json
+      warehouse_id: ${var.sql_warehouse_id}
+      embed_credentials: true
+      parent_path: /Users/${workspace.current_user.userName}
+      lifecycle:
+        prevent_destroy: true
+      permissions:
+        - level: CAN_READ
+          group_name: users

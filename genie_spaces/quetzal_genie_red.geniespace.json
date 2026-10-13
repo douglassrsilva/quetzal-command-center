@@ -1,0 +1,391 @@
+{
+  "config": {
+    "sample_questions": [
+      {"id": "20000000000000000000000000000001", "question": ["¿Qué incidentes de red requieren atención inmediata y por qué?"]},
+      {"id": "20000000000000000000000000000002", "question": ["Compara salud, capacidad, latencia y pérdida de paquetes por país en el último snapshot disponible."]},
+      {"id": "20000000000000000000000000000003", "question": ["¿Qué torres combinan anomalías, clientes conectados y presión de tickets?"]},
+      {"id": "20000000000000000000000000000004", "question": ["¿Qué datos de red están desactualizados y cuál es su fecha máxima?"]}
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "column_configs": [
+          {
+            "column_name": "alerta",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "anomaly_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "anomaly_severity",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "ciudad",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "is_anomaly",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "latencia_ms",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "packet_loss_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "scored_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tecnologia",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "temperatura_equipo_c",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "throughput_mbps",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "timestamp",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "torre_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "uso_capacidad_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "usuarios_conectados",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_network_anomalies"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "avg_latencia_ms",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_packet_loss_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_throughput_mbps",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "avg_uso_capacidad_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "hora",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "torres_en_alerta",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "total_mediciones",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "uptime_pct",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_network_health"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "clientes_activos",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "mes",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "segmento_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_activas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_canceladas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripciones_nuevas",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tasa_churn_pct",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_subscriber_metrics"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "calidad_señal_dbm",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cdr_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "datos_mb",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "duracion_seg",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha_hora",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "llamada_caida",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "plan_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "suscripcion_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tecnologia_red",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tipo_evento",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_cdrs"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "alerta",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "capacidad_usuarios",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "ciudad",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "latencia_ms",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "packet_loss_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tecnologia",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "temperatura_equipo_c",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "throughput_mbps",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "timestamp",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "torre_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "uso_capacidad_pct",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "usuarios_conectados",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_telemetria_red"
+      },
+      {
+        "column_configs": [
+          {
+            "column_name": "_ingested_at",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "_rescued_data",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "canal",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "categoria",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "cliente_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "csat_score",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "estado",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "fecha_creacion",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "motivo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "pais_codigo",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "prioridad",
+            "enable_entity_matching": true,
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "recontacto",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "ticket_id",
+            "enable_format_assistance": true
+          },
+          {
+            "column_name": "tiempo_resolucion_horas",
+            "enable_format_assistance": true
+          }
+        ],
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_tickets"
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [{
+      "content": [
+        "Responde en el idioma de la pregunta: español latinoamericano o portugués de Brasil.",
+        "Todos los datos son sintéticos y demostrativos. Indica siempre la fecha máxima de las fuentes utilizadas.",
+        "La columna gold_network_health.uptime_pct NO es disponibilidad contractual ni uptime de SLA: representa el porcentaje de mediciones sin alerta. Llámala salud de mediciones o network health score.",
+        "Nunca uses las palabras disponibilidad o uptime contractual para describir uptime_pct.",
+        "Para el estado actual usa el timestamp máximo disponible; no mezcles snapshots diferentes sin explicarlo.",
+        "Correlaciona anomalías con telemetría, clientes conectados y tickets únicamente cuando exista una clave o dimensión compatible.",
+        "Distingue hechos observados, hipótesis de causa raíz e inferencias. Declara la confianza y las métricas que sustentan cada hipótesis.",
+        "No expongas datos personales de clientes. Prefiere agregaciones por país, ciudad, tecnología y torre.",
+        "Si una métrica o relación no existe en las fuentes, declara la limitación y no inventes valores."
+      ]
+    }]
+  },
+  "version": 2
+}

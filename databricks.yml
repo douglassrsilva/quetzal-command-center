@@ -1,0 +1,147 @@
+bundle:
+  name: quetzal-command-center
+
+include:
+  - resources/*.yml
+
+sync:
+  exclude:
+    - genie_spaces/**
+    - .venv/**
+    - .pytest_cache/**
+    - frontend/node_modules/**
+    - frontend/src/**
+    - tests/**
+    - "**/__pycache__/**"
+    - "**/*.pyc"
+
+workspace:
+  host: https://fevm-classic-stable-douglas-s.cloud.databricks.com
+
+variables:
+  app_name:
+    description: Databricks App name for the target.
+    default: quetzal-command-center-dev
+  catalog:
+    description: Existing Unity Catalog catalog.
+    default: classic_stable_douglas_s_catalog
+  schema:
+    description: Quetzal telecom schema.
+    default: quetzal_telecom
+  raw_volume:
+    description: Existing UC volume used as the synthetic/raw landing zone.
+    default: raw_data
+  synthetic_reference_date:
+    description: Stable reference date used by the reproducible synthetic generator.
+    default: "2026-09-01"
+  synthetic_num_customers:
+    description: Number of synthetic customers generated only when the manual job is started.
+    default: "1000000"
+  synthetic_months_history:
+    default: "12"
+  synthetic_cdr_per_customer:
+    default: "50"
+  synthetic_tickets_per_1000:
+    default: "120"
+  synthetic_nps_sample_rate:
+    default: "0.10"
+  ml_seed:
+    description: Reproducible random seed shared by synthetic data and ML jobs.
+    default: "42"
+  ml_max_train_rows:
+    description: Maximum rows collected for each manual training task.
+    default: "250000"
+  ml_experiment_root:
+    description: Workspace experiment prefix; no parent directory or personal user path is required.
+    default: /Shared/quetzal-telecom
+  churn_model_name:
+    default: churn_prediction_model
+  network_model_name:
+    default: network_anomaly_model
+  clv_model_name:
+    default: clv_segmentation_model
+  churn_predictions_table:
+    default: gold_churn_predictions
+  network_anomalies_table:
+    default: gold_network_anomalies
+  clv_segments_table:
+    default: gold_clv_segments
+  churn_label_horizon_days:
+    description: Future synthetic observation window used for the demo label; production must replace it with observed cancellations.
+    default: "30"
+  sql_warehouse_id:
+    description: Serverless SQL Warehouse used by the app and bootstrap job.
+    default: 032931930451e566
+  workspace_id:
+    default: "7474654097678606"
+  ai_model:
+    description: Governed Unity AI Gateway model service.
+    default: classic_stable_douglas_s_catalog.quetzal_telecom.quetzal-telecom-asistente
+  admin_users:
+    description: Comma-separated Quetzal administrators.
+    default: douglas.s@databricks.com
+  lakebase_project:
+    description: Existing Autoscaling Lakebase project shared at compute level with isolated Quetzal database.
+    default: quilla-ltap
+  lakebase_branch:
+    default: production
+  lakebase_endpoint:
+    default: primary
+  lakebase_database:
+    default: quetzal
+  lakebase_database_resource_id:
+    default: quetzal
+  lakebase_owner_role:
+    default: projects/quilla-ltap/branches/production/roles/douglas-s
+  lakebase_host:
+    default: ep-raspy-rain-d2x4ywow.database.us-east-1.cloud.databricks.com
+  lakebase_app_principal:
+    description: Databricks App service-principal UUID mapped to the Lakebase OAuth role; refresh from `databricks apps get` when promoting to a new workspace.
+    default: c5a4fef4-b4c0-48dd-ad3f-fa1ebbdd6c0b
+  managed_memory_store:
+    description: Unity Catalog Managed Agent Memory store used for durable per-user semantic memory.
+    default: classic_stable_douglas_s_catalog.quetzal_telecom.quetzal_iq_memory
+  crm_webhook_url:
+    description: Optional CRM action connector endpoint.
+    default: DISABLED
+  oss_webhook_url:
+    description: Optional OSS action connector endpoint.
+    default: DISABLED
+  bss_webhook_url:
+    description: Optional BSS action connector endpoint.
+    default: DISABLED
+  genie_ingresos_id:
+    default: 01f1a73aa3281f5c815254ce86ca7408
+  genie_clientes_id:
+    default: 01f1a73ad42a198b8b9d29e9a3d081c8
+  genie_red_id:
+    default: 01f1a73ad42a1a72b2a813a1a9198e82
+  ontobricks_url:
+    description: URL of the audited OntoBricks app that publishes the Quetzal semantic domain.
+    default: https://ontobricks-quetzal-7474654097678606.aws.databricksapps.com
+  ontobricks_mcp_url:
+    description: Read-only MCP endpoint for the published Quetzal semantic domain.
+    default: https://mcp-ontobricks-quetzal-7474654097678606.aws.databricksapps.com/mcp
+  ontobricks_mcp_app_name:
+    description: Published OntoBricks MCP Databricks App used for app-to-app OAuth.
+    default: mcp-ontobricks-quetzal
+  ontobricks_domain:
+    description: Published OntoBricks domain that consumes the Quetzal triple table.
+    default: quetzal_telecom
+  ontobricks_version:
+    description: Audited OntoBricks release and source revision.
+    default: 0.8.1+b7dc8798dee5351ccc146cb32f90976d13287535
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+
+  demo:
+    mode: production
+    workspace:
+      root_path: /Workspace/Users/${workspace.current_user.userName}/.bundle/${bundle.name}/${bundle.target}
+    variables:
+      app_name: quetzal-command-center

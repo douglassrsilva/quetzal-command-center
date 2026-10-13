@@ -1,0 +1,55 @@
+{
+  "schema_version": "quetzal-execution-evidence-v1",
+  "collected_at": "2026-10-12T21:30:00Z",
+  "collection_timezone": "America/Sao_Paulo",
+  "app_name": "quetzal-command-center",
+  "app_version": "3.0.0",
+  "workspace_host": "https://fevm-classic-stable-douglas-s.cloud.databricks.com",
+  "deployment_id": "01f1c66f42181560b7e838842aad81ab",
+  "identity_policy": {
+    "human_identifiers": "MASKED",
+    "mask": "[MASKED_DATABRICKS_ACTOR]",
+    "tokens_persisted": false
+  },
+  "collection_policy": {
+    "read_only": true,
+    "jobs_started": 0,
+    "model_training_runs_started": 0,
+    "model_scoring_runs_started": 0,
+    "genie_queries_started": 0,
+    "quetzal_iq_inferences_started": 0,
+    "ontobricks_builds_started": 0,
+    "campaigns_sent": 0
+  },
+  "artifacts": [
+    "published-app.json",
+    "preflight.json",
+    "certified-demo.json",
+    "data-ml.json",
+    "lakeflow-run.json",
+    "genie-query.json",
+    "graph-ontobricks.json",
+    "lakebase-campaign.json",
+    "migration-run.json",
+    "ui-validation.json",
+    "quetzal-iq.json",
+    "local-validation.txt",
+    "limitations.md"
+  ],
+  "artifact_hashes_sha256": {
+    "README.md": "7828878ee0a3e58f50cce23c99d9ea09e3e9d7ae1fad493cea529a2c7dbaf0e2",
+    "published-app.json": "af17bea534898dbc5521ed135fa0ec7df03e8b27dcfafa026e74f80984c15523",
+    "preflight.json": "4d1e55540c578f90044b88b74af901bbaf14770ed700b0b8eb1c6b230ff5c486",
+    "certified-demo.json": "d9b4a5c6c743e44d1401a4657f315243e09026888bac79c72f33831d118b8fe3",
+    "data-ml.json": "6da009db23def08788b38e3d8f9ca7faa1cfdd315836585710a6271c0af7f71f",
+    "lakeflow-run.json": "a6ab20f2778a03459b6c50e42ff9613fe40b4356b1ad7f953438199ac3f88f89",
+    "genie-query.json": "fa3b4d239d2886c9a8734fb92691a617c10c77db20e5d827747d834e6f157e3e",
+    "graph-ontobricks.json": "cec626021f729564e31046d47856f8e7743daa707546e08edfb73c1f496df5f7",
+    "lakebase-campaign.json": "bb7d3c8a5cb10e57e83442ee446bee2e6833c246aa9764aec5d0fa356239f4b1",
+    "migration-run.json": "f0e1b215f316168a451cf42e1af536b39ee0946f7f191171283c31ee4fad5da8",
+    "ui-validation.json": "01dd0cebe6aefef08c62efe55ba74915b88993addf8fb2273f34a1bd1426caeb",
+    "quetzal-iq.json": "682b9e3cb0f10fb30aa67c20a70e62754582321c2471818444cb00431c6ac150",
+    "local-validation.txt": "8bff7a08be9b6f645a425d60da906a678613a94e5a387c290a3eb39ec6922a74",
+    "limitations.md": "6c9dfe968dfe679fd47171f0b46980d4c20238b6b2f3747b7b58ded35d000b39"
+  }
+}

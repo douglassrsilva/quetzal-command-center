@@ -1,0 +1,15 @@
+{
+  "source": "Databricks SQL Statement Execution API",
+  "statement_id": "01f1c66d-84b0-1a47-ada0-82a70f4743bf",
+  "warehouse_id": "032931930451e566",
+  "observed_at": "2026-10-12T18:54:24Z",
+  "status": "SUCCEEDED",
+  "row_count": 3,
+  "truncated": false,
+  "datasets": [
+    {"dataset": "churn", "model_version": "3", "model_run_id": "c4956b5425bf4cde922157263db7bea9", "score_source": "uc_model", "scored_at": "2026-10-12T01:24:33.180467Z"},
+    {"dataset": "clv", "model_version": "2", "model_run_id": "e9b25888129e4e8ea68fbcece1f9b240", "score_source": "uc_model", "scored_at": "2026-10-12T01:36:46.083500Z"},
+    {"dataset": "network", "model_version": "4", "model_run_id": "d3dc0ad5e79a43a1a0fab05b81524e9b", "score_source": "uc_model", "scored_at": "2026-10-12T01:24:35.473899Z"}
+  ],
+  "collection_effect": {"training_started": false, "scoring_started": false, "existing_statement_read": true}
+}

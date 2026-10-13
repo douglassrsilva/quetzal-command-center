@@ -1,0 +1,33 @@
+resources:
+  jobs:
+    quetzal_memory_foundation:
+      name: "[${bundle.target}] Quetzal | Managed Memory Foundation"
+      description: Provisiona e valida o Managed Agent Memory do Quetzal IQ. Execução exclusivamente manual.
+      max_concurrent_runs: 1
+      timeout_seconds: 1800
+      queue:
+        enabled: true
+      tags:
+        project: quetzal
+        workload: agent-memory
+        managed_by: dabs
+        schedule: manual-only
+      tasks:
+        - task_key: provision_managed_memory
+          notebook_task:
+            notebook_path: ${workspace.file_path}/notebooks/02_provision_agent_memory.py
+            source: WORKSPACE
+            base_parameters:
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              memory_store: quetzal_iq_memory
+              app_name: ${var.app_name}
+          environment_key: memory_env
+          timeout_seconds: 1200
+      environments:
+        - environment_key: memory_env
+          spec:
+            client: "4"
+            dependencies:
+              - "databricks-sdk>=0.63.0,<1"
+

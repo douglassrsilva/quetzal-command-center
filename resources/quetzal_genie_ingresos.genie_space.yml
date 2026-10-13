@@ -1,0 +1,8 @@
+resources:
+  genie_spaces:
+    quetzal_genie_ingresos:
+      title: "[${bundle.target}] Quetzal | Ingresos y Facturación"
+      warehouse_id: ${var.sql_warehouse_id}
+      file_path: ../genie_spaces/quetzal_genie_ingresos.geniespace.json
+      description: 'Espacio de inteligencia financiera de Quetzal Telecom. Consulta ingresos por pais y servicio, ARPU por segmento, salud de facturacion, morosidad y metricas de cobro en 12 paises de LATAM. Todos los montos estan en USD. Los segmentos de cliente son: PER (Personal/Quetzal Life), COM (Comercial/Quetzal Biz), ENT (Empresarial/Quetzal Enterprise). Los verticales son: Movil, Internet, TV, Fija, Bundles. Codigos de pais ISO 2: MX, BR, CO, AR, CL, PE, EC, PA, CR, DO, GT, UY. Las tablas gold_* estan pre-agregadas — prefierelas para preguntas de resumen. Usa silver_* solo para drill-down o detalle. Para periodos temporales, el campo es ''mes'' (formato date) en tablas gold. Cuando pregunten por ''ultimo trimestre'', usar los ultimos 3 meses disponibles. Siempre responde en espanol.'
+      parent_path: ${workspace.root_path}

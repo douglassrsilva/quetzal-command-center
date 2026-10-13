@@ -1,0 +1,36 @@
+{
+  "sources": ["Lakebase SQL read-only audit", "authenticated campaign E2E validation", "backend contract tests"],
+  "observed_at": "2026-10-12T18:54:24Z",
+  "campaign": {
+    "campaign_id": "CMP-E8E61467CC115EDA",
+    "status": "CANCELLED",
+    "campaign_sent": false,
+    "operational_version": 4,
+    "snapshot_version": 2,
+    "requested_by": "[MASKED_DATABRICKS_ACTOR]",
+    "assigned_to": "[MASKED_DATABRICKS_ACTOR]",
+    "audience_fingerprint": "71e4c5a0b97df1a8"
+  },
+  "immutable_versions": [
+    {"snapshot_version": 1, "source_draft_id": "DRAFT-86270D45190A", "snapshot_fingerprint": "f33a68e84d70f9798d02ebe82ba6d80aec852df525560ecccd27e53aa8d73654"},
+    {"snapshot_version": 2, "source_draft_id": "DRAFT-81E4F880A879", "snapshot_fingerprint": "89ddd0cea972b732823cf3ba2fb5b2db06704c5ef41217e17b8afce022538262"}
+  ],
+  "events": [
+    {"event_type": "CAMPAIGN_SAVED", "from_status": null, "to_status": "DRAFT", "campaign_sent": false},
+    {"event_type": "DRAFT_REVISED", "from_status": "DRAFT", "to_status": "DRAFT", "campaign_sent": false},
+    {"event_type": "STATUS_PENDING_APPROVAL", "from_status": "DRAFT", "to_status": "PENDING_APPROVAL", "campaign_sent": false},
+    {"event_type": "STATUS_CANCELLED", "from_status": "PENDING_APPROVAL", "to_status": "CANCELLED", "campaign_sent": false}
+  ],
+  "concurrency_and_segregation": {
+    "stale_version_http_status": 409,
+    "requester_self_approval_http_status": 409,
+    "positive_second_actor_remote_tested": false,
+    "positive_second_actor_backend_contract_tested": true
+  },
+  "app_role_grants": {
+    "campaign_drafts": ["INSERT", "SELECT", "UPDATE"],
+    "campaign_draft_versions": ["INSERT", "SELECT"],
+    "campaign_events": ["INSERT", "SELECT"]
+  },
+  "immutable_tables_have_update_or_delete": false
+}

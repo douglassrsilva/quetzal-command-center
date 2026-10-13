@@ -1,0 +1,24 @@
+{
+  "source": "Authorized authenticated remote E2E validation documented in DEMO.md",
+  "executed_at": "2026-10-12",
+  "deployment_id": "01f1c65ff1bd147ea9da80cafe552287",
+  "conversation_id": "iqc-2ff53812d00f42f287f827e8cd72e134",
+  "trace_id": "iq-bb4a400035aa",
+  "lakebase_transcript_persistence": true,
+  "managed_memory": {"recalled": true, "recalled_count": 3, "current_external_research_persisted": true},
+  "answer_contract": {
+    "historical_memory_separated_from_current_web_verification": true,
+    "ui_showed_memory_recovered": true,
+    "ui_showed_memory_saved": true
+  },
+  "execution_effect": {
+    "authorized_inference_calls": 1,
+    "jobs_started": 0,
+    "campaigns_created_or_sent": 0,
+    "operational_actions_executed": 0
+  },
+  "current_evidence_collection": {
+    "inference_repeated": false,
+    "reason": "A prova histórica já era suficiente; repetir a chamada apenas para documentação geraria custo sem aumentar a cobertura."
+  }
+}

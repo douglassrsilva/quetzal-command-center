@@ -1,0 +1,54 @@
+{
+  "sources": [
+    "GET /api/graph/runs/latest",
+    "GET /api/graph/methodology",
+    "GET /api/graph/semantic",
+    "python scripts/ontobricks_admin.py validate --profile vibe-coding"
+  ],
+  "observed_at": "2026-10-12T18:54:24Z",
+  "graph_intelligence": {
+    "workflow_run_id": 635974993711924,
+    "snapshot_run_id": "04c290e225184d98a8b041c4f2e14316",
+    "status": "SUCCEEDED",
+    "publication_status": "PUBLISHED",
+    "scheduled": false,
+    "manual_only": true,
+    "model_version": "graph-intelligence-v3-ontobricks",
+    "nodes": 60000,
+    "generated_calls": 300000,
+    "qualified_directed_edges": 198671,
+    "qualified_contact_entities": 72273,
+    "relationship_groups": 36303,
+    "source_triples": 1571631,
+    "source_predicates": 22
+  },
+  "ontobricks": {
+    "release": "0.8.1+b7dc8798dee5351ccc146cb32f90976d13287535",
+    "domain": "quetzal_telecom",
+    "domain_version": "1",
+    "domain_status": "PUBLISHED",
+    "graph_backend": "databricks",
+    "has_graph": true,
+    "materialized_triples": 1637100,
+    "distinct_subjects": 211985,
+    "distinct_predicates": 22,
+    "entity_types": 9,
+    "graphql_data_query": true,
+    "mcp_protocol": "2024-11-05",
+    "mcp_tool_count": 13,
+    "masked_customer_probe": {
+      "customer_id": "[MASKED_SYNTHETIC_CUSTOMER]",
+      "label": "M•••1600",
+      "baseline_churn_probability": 0.5311,
+      "network_exposure_score": 25.8,
+      "network_reach_score": 41.2,
+      "retention_priority_score": 42.6
+    }
+  },
+  "count_reconciliation": {
+    "source_triples": 1571631,
+    "materialized_triples": 1637100,
+    "explanation": "O primeiro total é o contrato Delta publicado pelo snapshot; o segundo é a triplestore materializada pelo OntoBricks após projeção do domínio. Não são a mesma camada física."
+  },
+  "collection_effect": {"graph_job_started": false, "ontobricks_build_started": false, "queries_were_read_only": true}
+}

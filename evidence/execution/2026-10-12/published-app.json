@@ -1,0 +1,33 @@
+{
+  "source": "databricks apps get quetzal-command-center --profile vibe-coding -o json",
+  "observed_at": "2026-10-12T19:02:19.246898Z",
+  "workspace_host": "https://fevm-classic-stable-douglas-s.cloud.databricks.com",
+  "app": {
+    "name": "quetzal-command-center",
+    "url": "https://quetzal-command-center-7474654097678606.aws.databricksapps.com",
+    "app_status": "RUNNING",
+    "compute_status": "ACTIVE",
+    "compute_size": "MEDIUM",
+    "deployment_id": "01f1c66f42181560b7e838842aad81ab",
+    "deployment_status": "SUCCEEDED",
+    "deployment_message": "App started successfully",
+    "deployment_create_time": "2026-10-12T19:00:57Z",
+    "deployment_update_time": "2026-10-12T19:01:39Z",
+    "deployment_mode": "SNAPSHOT",
+    "source_code_path": "/Workspace/Users/[MASKED_DATABRICKS_ACTOR]/.bundle/quetzal-command-center/demo/files"
+  },
+  "resources": {
+    "lakebase": "CAN_CONNECT_AND_CREATE",
+    "sql_warehouse": {"id": "032931930451e566", "permission": "CAN_USE"},
+    "ontobricks_mcp": "CAN_USE",
+    "genie_spaces": {"ingresos": "CAN_RUN", "clientes": "CAN_RUN", "red": "CAN_RUN"},
+    "graph_intelligence_job": {"id": "340986653421253", "permission": "CAN_MANAGE_RUN"}
+  },
+  "effective_user_api_scopes": [
+    "ai-gateway",
+    "genie",
+    "iam.access-control:read",
+    "iam.current-user:read",
+    "sql"
+  ]
+}

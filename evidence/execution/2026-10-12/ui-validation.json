@@ -1,0 +1,30 @@
+{
+  "source": "Chrome headless via CDP against the published Databricks App",
+  "observed_at": "2026-10-12T19:03:21Z",
+  "deployment_id": "01f1c66f42181560b7e838842aad81ab",
+  "campaign_id": "CMP-E8E61467CC115EDA",
+  "desktop": {
+    "viewport_width": 1440,
+    "document_scroll_width": 1425,
+    "horizontal_overflow": false,
+    "campaign_component_width": 1077,
+    "columns": "340.969px 734.031px",
+    "saved_campaign_font_size": "12px",
+    "title_font_size": "18px",
+    "input_font_size": "15px",
+    "restored_state": "Cancelada",
+    "delivery_guardrail": "NUNCA ENVÍA",
+    "themes_checked": ["dark", "light"]
+  },
+  "mobile": {
+    "viewport_width": 390,
+    "document_scroll_width": 390,
+    "horizontal_overflow": false,
+    "component_left": 18,
+    "component_right": 372,
+    "detail_width": 352,
+    "columns": "352px"
+  },
+  "runtime": {"console_errors": 0, "failed_requests": 0},
+  "screenshots_are_supplemental": true
+}

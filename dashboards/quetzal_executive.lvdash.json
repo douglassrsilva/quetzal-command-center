@@ -1,0 +1,2837 @@
+{
+  "datasets": [
+    {
+      "name": "mv_red",
+      "displayName": "Operaciones de Red",
+      "asset_name": "classic_stable_douglas_s_catalog.quetzal_telecom.mv_operaciones_red"
+    },
+    {
+      "name": "mv_satisfaccion",
+      "displayName": "Satisfacción del Cliente",
+      "asset_name": "classic_stable_douglas_s_catalog.quetzal_telecom.mv_satisfaccion_cliente"
+    },
+    {
+      "name": "mv_ingresos",
+      "displayName": "Ingresos y Facturación",
+      "asset_name": "classic_stable_douglas_s_catalog.quetzal_telecom.mv_ingresos_facturacion"
+    },
+    {
+      "name": "forecast_churn",
+      "displayName": "Pronóstico de Facturación",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  ai_forecast(\n",
+        "    TABLE (\n",
+        "\n",
+        "      SELECT\n",
+        "        DATE(mes) AS ds,\n",
+        "        SUM(facturacion_total_usd) AS facturacion\n",
+        "      FROM\n",
+        "        classic_stable_douglas_s_catalog.quetzal_telecom.gold_billing_health\n",
+        "      GROUP BY\n",
+        "        DATE(mes)\n",
+        "      ORDER BY\n",
+        "        ds\n",
+        "    ),\n",
+        "    horizon => DATE '2026-12-31',\n",
+        "    time_col => 'ds',\n",
+        "    value_col => 'facturacion',\n",
+        "    prediction_interval_width => 0.95,\n",
+        "    version => '2'\n",
+        "  )"
+      ]
+    },
+    {
+      "name": "forecast_revenue",
+      "displayName": "Pronóstico Ingresos",
+      "queryLines": [
+        "SELECT\n",
+        "  *\n",
+        "FROM\n",
+        "  ai_forecast(\n",
+        "    TABLE (\n",
+        "\n",
+        "      SELECT\n",
+        "        DATE(mes) as ds,\n",
+        "        SUM(ingresos_totales_usd) as ingresos\n",
+        "      FROM\n",
+        "        classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service\n",
+        "      GROUP BY\n",
+        "        DATE(mes)\n",
+        "      ORDER BY\n",
+        "        ds\n",
+        "    ),\n",
+        "    horizon => DATE '2026-12-31',\n",
+        "    time_col => 'ds',\n",
+        "    value_col => 'ingresos',\n",
+        "    prediction_interval_width => 0.95,\n",
+        "    version => '2'\n",
+        "  )"
+      ]
+    },
+    {
+      "name": "scatter_pais",
+      "displayName": "Scatter — Revenue vs NPS por País",
+      "queryLines": [
+        "SELECT\n",
+        "  r.pais_codigo AS pais,\n",
+        "  SUM(r.ingresos_totales_usd) AS ingresos_totales,\n",
+        "  AVG(s.nps_index) AS nps_index,\n",
+        "  AVG(s.avg_csat) AS avg_csat,\n",
+        "  SUM(r.num_facturas) AS num_facturas\n",
+        "FROM\n",
+        "  classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service r\n",
+        "    JOIN classic_stable_douglas_s_catalog.quetzal_telecom.gold_customer_satisfaction s\n",
+        "      ON r.pais_codigo = s.pais_codigo\n",
+        "GROUP BY\n",
+        "  r.pais_codigo\n",
+        "ORDER BY\n",
+        "  ingresos_totales DESC"
+      ]
+    },
+    {
+      "name": "morosidad",
+      "displayName": "Morosidad Mensual",
+      "queryLines": [
+        "SELECT\n",
+        "  DATE(mes) AS mes,\n",
+        "  AVG(pct_vencida) AS pct_morosidad\n",
+        "FROM\n",
+        "  classic_stable_douglas_s_catalog.quetzal_telecom.gold_billing_health\n",
+        "GROUP BY\n",
+        "  DATE(mes)\n",
+        "ORDER BY\n",
+        "  mes"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "name": "6fb2c459",
+      "displayName": "Resumen Ejecutivo",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "# Panel Ejecutivo — Quetzal Telecom\n",
+                "### *Tu mundo. Sin fronteras.* | Resumen operativo de 12 países LATAM"
+              ]
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 0,
+            "width": 8,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_ingresos",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Ingresos Totales"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_ticket",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "measure(ticket_promedio)",
+                      "expression": "MEASURE(`ticket_promedio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Ticket Promedio"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(ticket_promedio)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_nps",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(nps_index)",
+                      "expression": "MEASURE(`nps_index`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Índice NPS"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(nps_index)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_uptime",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(uptime)",
+                      "expression": "MEASURE(`uptime`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Uptime Red %"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(uptime)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_cobro",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "measure(tasa_cobro)",
+                      "expression": "MEASURE(`tasa_cobro`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Cobro"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(tasa_cobro)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_riesgo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(clientes_riesgo_alto)",
+                      "expression": "MEASURE(`clientes_riesgo_alto`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Clientes Riesgo Alto"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(clientes_riesgo_alto)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 2,
+            "width": 2,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_ingresos_pais",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Ingresos por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "displayName": "ingresos_totales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 4,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "line_nps_mes",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "measure(nps_index)",
+                      "expression": "MEASURE(`nps_index`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Evolución NPS Mensual"
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "displayName": "Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(nps_index)",
+                  "displayName": "nps_index",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 4,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_latencia",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(latencia_promedio)",
+                      "expression": "MEASURE(`latencia_promedio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Latencia Promedio por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(latencia_promedio)",
+                  "displayName": "latencia_promedio",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 9,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_torres_alerta",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(torres_en_alerta)",
+                      "expression": "MEASURE(`torres_en_alerta`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Torres en Alerta"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(torres_en_alerta)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 9,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_suscripciones",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(suscripciones_activas)",
+                      "expression": "MEASURE(`suscripciones_activas`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Suscripciones Activas"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(suscripciones_activas)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 9,
+            "y": 9,
+            "width": 3,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "logo",
+            "imageSpec": {
+              "useSeparateLightDarkImages": true,
+              "image": {
+                "sourceLight": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDg3NUEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4NzVBO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gPT09PT09PT09PSBRVUVUWkFMIE1BUksg4oCUIGFic3RyYWN0LCBtaW5pbWFsID09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CgogICAgPCEtLSBMb25nIHRhaWwg4oCUIHNpbmdsZSBlbGVnYW50IFMtY3VydmUsIFRIRSBzaWduYXR1cmUgZWxlbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTI1LDE5NSBDIDEyMCwyNDAgMTA1LDMxMCA5NSwzNzAgUSA5MCw0MDAgMTAwLDQwMCBRIDExMCw0MDAgMTA4LDM3MCBDIDExNSwzMTAgMTI1LDI0MCAxMzAsMTk1IgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiLz4KICAgIDxwYXRoIGQ9Ik0gMTA1LDE5MCBDIDg1LDI0MCA1NSwzMjAgMzUsMzc1IFEgMjgsMzk1IDM4LDM5OCBRIDQ4LDM5OCA1MiwzNzggQyA3MCwzMjUgOTIsMjQ1IDExMCwxOTIiCiAgICAgICAgICBmaWxsPSJ1cmwoI3RhaWxGYWRlKSIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNIDE0NSwxOTAgQyAxNjUsMjQwIDE5NSwzMjAgMjE1LDM3NSBRIDIyMiwzOTUgMjEyLDM5OCBRIDIwMiwzOTggMTk4LDM3OCBDIDE4MCwzMjUgMTU4LDI0NSAxNDAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNiIvPgoKICAgIDwhLS0gQm9keSDigJQgY2xlYW4gcm91bmRlZCBzaGFwZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgoKICAgIDwhLS0gQ2hlc3Qg4oCUIHF1ZXR6YWwncyByZWQgYnJlYXN0IC0tPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KCiAgICA8IS0tIFdpbmcgbGVmdCAtLT4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIgogICAgICAgICAgZmlsbD0iIzAwNEQzRCIvPgoKICAgIDwhLS0gV2luZyByaWdodCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTYwLDk1IEMgMjE1LDU1IDI1NSw4MCAyMzUsMTIwIEMgMjIyLDE0NSAxOTAsMTUwIDE2OCwxMzUgWiIKICAgICAgICAgIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIEhlYWQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMzQiIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIENyZXN0IOKAlCAzIGNsZWFuIHN0cm9rZXMgLS0+CiAgICA8bGluZSB4MT0iMTEyIiB5MT0iMzAiIHgyPSIxMDgiIHkyPSI4IiBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSIyNiIgeDI9IjEyNSIgeTI9IjIiICBzdHJva2U9IiMwMDg3NUEiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMzgiIHkxPSIzMCIgeDI9IjE0MiIgeTI9IjgiICBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgICA8IS0tIEV5ZSAtLT4KICAgIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjU1IiByPSI5IiAgIGZpbGw9IiNGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjUzLjUiIHI9IjQuNSIgZmlsbD0iIzFBMUEyRSIvPgogICAgPGNpcmNsZSBjeD0iMTQyIiBjeT0iNTEuNSIgcj0iMS41IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjciLz4KCiAgICA8IS0tIEJlYWsg4oCUIGNsZWFuIHNoYXJwIGdvbGQgLS0+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPCEtLSA9PT09PT09PT09IFRZUE9HUkFQSFkgPT09PT09PT09PSAtLT4KCiAgPCEtLSBRVUVUWkFMIC0tPgogIDx0ZXh0IHg9IjMzMCIgeT0iMTc4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSI1IgogICAgICAgIGZpbGw9IiMxQTFBMkUiPlFVRVRaQUw8L3RleHQ+CgogIDwhLS0gR29sZCBkaXZpZGVyIC0tPgogIDxsaW5lIHgxPSIzMzIiIHkxPSIxOTgiIHgyPSI4MTAiIHkyPSIxOTgiCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2dvbGRMaW5lKSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjYiLz4KCiAgPCEtLSBURUxFQ09NIC0tPgogIDx0ZXh0IHg9IjMzNCIgeT0iMjM4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMzQiIGZvbnQtd2VpZ2h0PSIzMDAiIGxldHRlci1zcGFjaW5nPSIxNCIKICAgICAgICBmaWxsPSIjMDA4NzVBIj5URUxFQ09NPC90ZXh0PgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIzMzQiIHk9IjI4MCIKICAgICAgICBmb250LWZhbWlseT0iJ0hlbHZldGljYSBOZXVlJywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iMSIKICAgICAgICBmaWxsPSIjNzc3Nzc3Ij5UdSBtdW5kby4gU2luIGZyb250ZXJhcy48L3RleHQ+Cgo8L3N2Zz4="
+                },
+                "sourceDark": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEMwN0IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBDMDdCO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gRGFyayBCRyAtLT4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCIgcng9IjAiIGZpbGw9IiMxMTE4MjciLz4KCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CiAgICA8cGF0aCBkPSJNIDEyNSwxOTUgQyAxMjAsMjQwIDEwNSwzMTAgOTUsMzcwIFEgOTAsNDAwIDEwMCw0MDAgUSAxMTAsNDAwIDEwOCwzNzAgQyAxMTUsMzEwIDEyNSwyNDAgMTMwLDE5NSIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIi8+CiAgICA8cGF0aCBkPSJNIDEwNSwxOTAgQyA4NSwyNDAgNTUsMzIwIDM1LDM3NSBRIDI4LDM5NSAzOCwzOTggUSA0OCwzOTggNTIsMzc4IEMgNzAsMzI1IDkyLDI0NSAxMTAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTSAxNDUsMTkwIEMgMTY1LDI0MCAxOTUsMzIwIDIxNSwzNzUgUSAyMjIsMzk1IDIxMiwzOTggUSAyMDIsMzk4IDE5OCwzNzggQyAxODAsMzI1IDE1OCwyNDUgMTQwLDE5MiIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIiBmaWxsPSIjMDA0RDNEIi8+CiAgICA8cGF0aCBkPSJNIDE2MCw5NSBDIDIxNSw1NSAyNTUsODAgMjM1LDEyMCBDIDIyMiwxNDUgMTkwLDE1MCAxNjgsMTM1IFoiIGZpbGw9IiMwMDREM0QiLz4KICAgIDxjaXJjbGUgY3g9IjEyNSIgY3k9IjYwIiByPSIzNCIgZmlsbD0iIzAwNEQzRCIvPgogICAgPGxpbmUgeDE9IjExMiIgeTE9IjMwIiB4Mj0iMTA4IiB5Mj0iOCIgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iMjYiIHgyPSIxMjUiIHkyPSIyIiAgc3Ryb2tlPSIjMDA4NzVBIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTM4IiB5MT0iMzAiIHgyPSIxNDIiIHkyPSI4IiAgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSI1NSIgcj0iOSIgICBmaWxsPSIjRkZGIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI1My41IiByPSI0LjUiIGZpbGw9IiMxQTFBMkUiLz4KICAgIDxjaXJjbGUgY3g9IjE0MiIgY3k9IjUxLjUiIHI9IjEuNSIgZmlsbD0iI0ZGRiIgb3BhY2l0eT0iMC43Ii8+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPHRleHQgeD0iMzMwIiB5PSIxNzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjUiCiAgICAgICAgZmlsbD0iI0YwRjBGMCI+UVVFVFpBTDwvdGV4dD4KICA8bGluZSB4MT0iMzMyIiB5MT0iMTk4IiB4Mj0iODEwIiB5Mj0iMTk4IgogICAgICAgIHN0cm9rZT0idXJsKCNnb2xkTGluZSkiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgPHRleHQgeD0iMzM0IiB5PSIyMzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjMwMCIgbGV0dGVyLXNwYWNpbmc9IjE0IgogICAgICAgIGZpbGw9IiMwMEMwN0IiPlRFTEVDT008L3RleHQ+CiAgPHRleHQgeD0iMzM0IiB5PSIyODAiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjEiCiAgICAgICAgZmlsbD0iIzg4ODg4OCI+VHUgbXVuZG8uIFNpbiBmcm9udGVyYXMuPC90ZXh0Pgo8L3N2Zz4="
+                },
+                "altText": "Quetzal Telecom Logo"
+              },
+              "frame": {},
+              "style": {
+                "sizeMode": "SIZE_MODE_FIT",
+                "horizontalAlign": "HORIZONTAL_ALIGN_CENTER",
+                "verticalAlign": "VERTICAL_ALIGN_CENTER"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "scatter_rev_nps",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "scatter_pais",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "ingresos_totales",
+                      "expression": "`ingresos_totales`"
+                    },
+                    {
+                      "name": "nps_index",
+                      "expression": "`nps_index`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Revenue vs NPS por País"
+              },
+              "version": 3,
+              "mark": {
+                "size": 2
+              },
+              "widgetType": "scatter",
+              "encodings": {
+                "x": {
+                  "fieldName": "ingresos_totales",
+                  "displayName": "Ingresos Totales (USD)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "y": {
+                  "fieldName": "nps_index",
+                  "displayName": "Índice NPS",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "País",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 14,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "area_ingresos_trend",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "vertical_servicio",
+                      "expression": "`vertical_servicio`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Tendencia de Ingresos por Vertical"
+              },
+              "version": 3,
+              "mark": {
+                "lineShape": "smooth",
+                "layout": "percent-stack"
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "displayName": "Mes",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "displayName": "Ingresos USD",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "vertical_servicio",
+                  "displayName": "Vertical",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 14,
+            "width": 6,
+            "height": 5
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "ingresos",
+      "displayName": "Ingresos y Facturación",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 💰 Ingresos y Facturación\n",
+                "Desglose de revenue, ARPU y salud de cobro por país y vertical"
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 9,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_pais",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Ingresos por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "displayName": "ingresos_totales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "line_vertical",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "vertical_servicio",
+                      "expression": "`vertical_servicio`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Ingresos por Vertical — Tendencia Mensual",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "displayName": "Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "displayName": "ingresos_totales",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "vertical_servicio",
+                  "displayName": "Vertical",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "tabla_cobro",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    },
+                    {
+                      "name": "measure(ingresos_cobrados)",
+                      "expression": "MEASURE(`ingresos_cobrados`)"
+                    },
+                    {
+                      "name": "measure(tasa_cobro)",
+                      "expression": "MEASURE(`tasa_cobro`)"
+                    },
+                    {
+                      "name": "measure(cartera_vencida)",
+                      "expression": "MEASURE(`cartera_vencida`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Salud de Facturación por País",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "pais"
+                  },
+                  {
+                    "fieldName": "measure(ingresos_totales)"
+                  },
+                  {
+                    "fieldName": "measure(ingresos_cobrados)"
+                  },
+                  {
+                    "fieldName": "measure(tasa_cobro)"
+                  },
+                  {
+                    "fieldName": "measure(cartera_vencida)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "pie_vertical",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    },
+                    {
+                      "name": "vertical_servicio",
+                      "expression": "`vertical_servicio`"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Ingresos por Vertical"
+              },
+              "version": 3,
+              "widgetType": "pie",
+              "encodings": {
+                "angle": {
+                  "fieldName": "measure(ingresos_totales)",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "displayName": "ingresos_totales"
+                },
+                "color": {
+                  "fieldName": "vertical_servicio",
+                  "displayName": "vertical_servicio",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 7,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_cartera",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(cartera_vencida)",
+                      "expression": "MEASURE(`cartera_vencida`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Cartera Vencida por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(cartera_vencida)",
+                  "displayName": "cartera_vencida",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "line_morosidad",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "morosidad",
+                  "fields": [
+                    {
+                      "name": "mes",
+                      "expression": "`mes`"
+                    },
+                    {
+                      "name": "pct_morosidad",
+                      "expression": "`pct_morosidad`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Morosidad Mensual",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "mes",
+                  "displayName": "Mes",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "pct_morosidad",
+                  "displayName": "% Morosidad",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 12,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "pivot_pais_vertical",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "vertical_servicio",
+                      "expression": "`vertical_servicio`"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    }
+                  ],
+                  "cubeGroupingSets": {
+                    "sets": [
+                      {
+                        "fieldNames": [
+                          "pais"
+                        ]
+                      },
+                      {
+                        "fieldNames": [
+                          "vertical_servicio"
+                        ]
+                      }
+                    ]
+                  },
+                  "disaggregated": false,
+                  "orders": [
+                    {
+                      "direction": "ASC",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "direction": "ASC",
+                      "expression": "`vertical_servicio`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Matriz País × Vertical"
+              },
+              "version": 3,
+              "widgetType": "pivot",
+              "encodings": {
+                "rows": [
+                  {
+                    "fieldName": "pais",
+                    "scale": {
+                      "type": "categorical"
+                    }
+                  }
+                ],
+                "columns": [
+                  {
+                    "fieldName": "vertical_servicio",
+                    "scale": {
+                      "type": "categorical"
+                    }
+                  }
+                ],
+                "cell": {
+                  "type": "single-cell",
+                  "fieldName": "measure(ingresos_totales)"
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "combo_rev_cobro",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(ingresos_totales)",
+                      "expression": "MEASURE(`ingresos_totales`)"
+                    },
+                    {
+                      "name": "measure(tasa_cobro)",
+                      "expression": "MEASURE(`tasa_cobro`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Revenue vs Tasa de Cobro"
+              },
+              "version": 1,
+              "widgetType": "combo",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "País",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "primary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(ingresos_totales)",
+                        "displayName": "Ingresos Totales"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    },
+                    "format": {
+                      "type": "number-currency",
+                      "abbreviation": "compact",
+                      "currencyCode": "USD"
+                    }
+                  },
+                  "secondary": {
+                    "fields": [
+                      {
+                        "fieldName": "measure(tasa_cobro)",
+                        "displayName": "Tasa de Cobro %"
+                      }
+                    ],
+                    "scale": {
+                      "type": "quantitative"
+                    },
+                    "format": {
+                      "type": "number-percent"
+                    }
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 23,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "logo",
+            "imageSpec": {
+              "useSeparateLightDarkImages": true,
+              "image": {
+                "sourceLight": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDg3NUEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4NzVBO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gPT09PT09PT09PSBRVUVUWkFMIE1BUksg4oCUIGFic3RyYWN0LCBtaW5pbWFsID09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CgogICAgPCEtLSBMb25nIHRhaWwg4oCUIHNpbmdsZSBlbGVnYW50IFMtY3VydmUsIFRIRSBzaWduYXR1cmUgZWxlbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTI1LDE5NSBDIDEyMCwyNDAgMTA1LDMxMCA5NSwzNzAgUSA5MCw0MDAgMTAwLDQwMCBRIDExMCw0MDAgMTA4LDM3MCBDIDExNSwzMTAgMTI1LDI0MCAxMzAsMTk1IgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiLz4KICAgIDxwYXRoIGQ9Ik0gMTA1LDE5MCBDIDg1LDI0MCA1NSwzMjAgMzUsMzc1IFEgMjgsMzk1IDM4LDM5OCBRIDQ4LDM5OCA1MiwzNzggQyA3MCwzMjUgOTIsMjQ1IDExMCwxOTIiCiAgICAgICAgICBmaWxsPSJ1cmwoI3RhaWxGYWRlKSIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNIDE0NSwxOTAgQyAxNjUsMjQwIDE5NSwzMjAgMjE1LDM3NSBRIDIyMiwzOTUgMjEyLDM5OCBRIDIwMiwzOTggMTk4LDM3OCBDIDE4MCwzMjUgMTU4LDI0NSAxNDAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNiIvPgoKICAgIDwhLS0gQm9keSDigJQgY2xlYW4gcm91bmRlZCBzaGFwZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgoKICAgIDwhLS0gQ2hlc3Qg4oCUIHF1ZXR6YWwncyByZWQgYnJlYXN0IC0tPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KCiAgICA8IS0tIFdpbmcgbGVmdCAtLT4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIgogICAgICAgICAgZmlsbD0iIzAwNEQzRCIvPgoKICAgIDwhLS0gV2luZyByaWdodCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTYwLDk1IEMgMjE1LDU1IDI1NSw4MCAyMzUsMTIwIEMgMjIyLDE0NSAxOTAsMTUwIDE2OCwxMzUgWiIKICAgICAgICAgIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIEhlYWQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMzQiIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIENyZXN0IOKAlCAzIGNsZWFuIHN0cm9rZXMgLS0+CiAgICA8bGluZSB4MT0iMTEyIiB5MT0iMzAiIHgyPSIxMDgiIHkyPSI4IiBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSIyNiIgeDI9IjEyNSIgeTI9IjIiICBzdHJva2U9IiMwMDg3NUEiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMzgiIHkxPSIzMCIgeDI9IjE0MiIgeTI9IjgiICBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgICA8IS0tIEV5ZSAtLT4KICAgIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjU1IiByPSI5IiAgIGZpbGw9IiNGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjUzLjUiIHI9IjQuNSIgZmlsbD0iIzFBMUEyRSIvPgogICAgPGNpcmNsZSBjeD0iMTQyIiBjeT0iNTEuNSIgcj0iMS41IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjciLz4KCiAgICA8IS0tIEJlYWsg4oCUIGNsZWFuIHNoYXJwIGdvbGQgLS0+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPCEtLSA9PT09PT09PT09IFRZUE9HUkFQSFkgPT09PT09PT09PSAtLT4KCiAgPCEtLSBRVUVUWkFMIC0tPgogIDx0ZXh0IHg9IjMzMCIgeT0iMTc4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSI1IgogICAgICAgIGZpbGw9IiMxQTFBMkUiPlFVRVRaQUw8L3RleHQ+CgogIDwhLS0gR29sZCBkaXZpZGVyIC0tPgogIDxsaW5lIHgxPSIzMzIiIHkxPSIxOTgiIHgyPSI4MTAiIHkyPSIxOTgiCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2dvbGRMaW5lKSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjYiLz4KCiAgPCEtLSBURUxFQ09NIC0tPgogIDx0ZXh0IHg9IjMzNCIgeT0iMjM4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMzQiIGZvbnQtd2VpZ2h0PSIzMDAiIGxldHRlci1zcGFjaW5nPSIxNCIKICAgICAgICBmaWxsPSIjMDA4NzVBIj5URUxFQ09NPC90ZXh0PgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIzMzQiIHk9IjI4MCIKICAgICAgICBmb250LWZhbWlseT0iJ0hlbHZldGljYSBOZXVlJywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iMSIKICAgICAgICBmaWxsPSIjNzc3Nzc3Ij5UdSBtdW5kby4gU2luIGZyb250ZXJhcy48L3RleHQ+Cgo8L3N2Zz4="
+                },
+                "sourceDark": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEMwN0IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBDMDdCO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gRGFyayBCRyAtLT4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCIgcng9IjAiIGZpbGw9IiMxMTE4MjciLz4KCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CiAgICA8cGF0aCBkPSJNIDEyNSwxOTUgQyAxMjAsMjQwIDEwNSwzMTAgOTUsMzcwIFEgOTAsNDAwIDEwMCw0MDAgUSAxMTAsNDAwIDEwOCwzNzAgQyAxMTUsMzEwIDEyNSwyNDAgMTMwLDE5NSIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIi8+CiAgICA8cGF0aCBkPSJNIDEwNSwxOTAgQyA4NSwyNDAgNTUsMzIwIDM1LDM3NSBRIDI4LDM5NSAzOCwzOTggUSA0OCwzOTggNTIsMzc4IEMgNzAsMzI1IDkyLDI0NSAxMTAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTSAxNDUsMTkwIEMgMTY1LDI0MCAxOTUsMzIwIDIxNSwzNzUgUSAyMjIsMzk1IDIxMiwzOTggUSAyMDIsMzk4IDE5OCwzNzggQyAxODAsMzI1IDE1OCwyNDUgMTQwLDE5MiIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIiBmaWxsPSIjMDA0RDNEIi8+CiAgICA8cGF0aCBkPSJNIDE2MCw5NSBDIDIxNSw1NSAyNTUsODAgMjM1LDEyMCBDIDIyMiwxNDUgMTkwLDE1MCAxNjgsMTM1IFoiIGZpbGw9IiMwMDREM0QiLz4KICAgIDxjaXJjbGUgY3g9IjEyNSIgY3k9IjYwIiByPSIzNCIgZmlsbD0iIzAwNEQzRCIvPgogICAgPGxpbmUgeDE9IjExMiIgeTE9IjMwIiB4Mj0iMTA4IiB5Mj0iOCIgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iMjYiIHgyPSIxMjUiIHkyPSIyIiAgc3Ryb2tlPSIjMDA4NzVBIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTM4IiB5MT0iMzAiIHgyPSIxNDIiIHkyPSI4IiAgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSI1NSIgcj0iOSIgICBmaWxsPSIjRkZGIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI1My41IiByPSI0LjUiIGZpbGw9IiMxQTFBMkUiLz4KICAgIDxjaXJjbGUgY3g9IjE0MiIgY3k9IjUxLjUiIHI9IjEuNSIgZmlsbD0iI0ZGRiIgb3BhY2l0eT0iMC43Ii8+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPHRleHQgeD0iMzMwIiB5PSIxNzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjUiCiAgICAgICAgZmlsbD0iI0YwRjBGMCI+UVVFVFpBTDwvdGV4dD4KICA8bGluZSB4MT0iMzMyIiB5MT0iMTk4IiB4Mj0iODEwIiB5Mj0iMTk4IgogICAgICAgIHN0cm9rZT0idXJsKCNnb2xkTGluZSkiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgPHRleHQgeD0iMzM0IiB5PSIyMzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjMwMCIgbGV0dGVyLXNwYWNpbmc9IjE0IgogICAgICAgIGZpbGw9IiMwMEMwN0IiPlRFTEVDT008L3RleHQ+CiAgPHRleHQgeD0iMzM0IiB5PSIyODAiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjEiCiAgICAgICAgZmlsbD0iIzg4ODg4OCI+VHUgbXVuZG8uIFNpbiBmcm9udGVyYXMuPC90ZXh0Pgo8L3N2Zz4="
+                },
+                "altText": "Quetzal Telecom Logo"
+              },
+              "frame": {},
+              "style": {
+                "sizeMode": "SIZE_MODE_FIT",
+                "horizontalAlign": "HORIZONTAL_ALIGN_CENTER",
+                "verticalAlign": "VERTICAL_ALIGN_CENTER"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "clientes",
+      "displayName": "Inteligencia de Clientes",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 👥 Inteligencia de Clientes\n",
+                "NPS, satisfacción, riesgo de churn y segmentación CLV"
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 9,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "line_nps_pais",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "measure(nps_index)",
+                      "expression": "MEASURE(`nps_index`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Evolución NPS por País",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "displayName": "Month",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(nps_index)",
+                  "displayName": "nps_index",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "País",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 8,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_csat",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(csat_top2)",
+                      "expression": "MEASURE(`csat_top2`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "CSAT Top-2 Box"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(csat_top2)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 2,
+            "width": 4,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_riesgo",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(clientes_riesgo_alto)",
+                      "expression": "MEASURE(`clientes_riesgo_alto`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Clientes en Riesgo Alto por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(clientes_riesgo_alto)",
+                  "displayName": "clientes_riesgo_alto",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 8,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_encuestas",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(total_encuestas)",
+                      "expression": "MEASURE(`total_encuestas`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Total Encuestas"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(total_encuestas)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 7,
+            "width": 4,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_promotores",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(promotores)",
+                      "expression": "MEASURE(`promotores`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Promotores"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(promotores)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 9,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_detractores",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "measure(detractores)",
+                      "expression": "MEASURE(`detractores`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Detractores"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(detractores)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 10,
+            "y": 9,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "tabla_satisfaccion",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(nps_index)",
+                      "expression": "MEASURE(`nps_index`)"
+                    },
+                    {
+                      "name": "measure(avg_csat)",
+                      "expression": "MEASURE(`avg_csat`)"
+                    },
+                    {
+                      "name": "measure(csat_top2)",
+                      "expression": "MEASURE(`csat_top2`)"
+                    },
+                    {
+                      "name": "measure(promotores)",
+                      "expression": "MEASURE(`promotores`)"
+                    },
+                    {
+                      "name": "measure(detractores)",
+                      "expression": "MEASURE(`detractores`)"
+                    },
+                    {
+                      "name": "measure(clientes_riesgo_alto)",
+                      "expression": "MEASURE(`clientes_riesgo_alto`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Satisfacción por País"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "pais"
+                  },
+                  {
+                    "fieldName": "measure(nps_index)"
+                  },
+                  {
+                    "fieldName": "measure(avg_csat)"
+                  },
+                  {
+                    "fieldName": "measure(csat_top2)"
+                  },
+                  {
+                    "fieldName": "measure(promotores)"
+                  },
+                  {
+                    "fieldName": "measure(detractores)"
+                  },
+                  {
+                    "fieldName": "measure(clientes_riesgo_alto)"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "area_nps_pais",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_satisfaccion",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "monthly(mes)",
+                      "expression": "DATE_TRUNC(\"MONTH\", `mes`)"
+                    },
+                    {
+                      "name": "measure(total_encuestas)",
+                      "expression": "MEASURE(`total_encuestas`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Composición NPS por País"
+              },
+              "version": 3,
+              "mark": {
+                "lineShape": "smooth",
+                "layout": "stack"
+              },
+              "widgetType": "area",
+              "encodings": {
+                "x": {
+                  "fieldName": "monthly(mes)",
+                  "displayName": "Mes",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(total_encuestas)",
+                  "displayName": "Total Encuestas",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "País",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 17,
+            "width": 12,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "logo",
+            "imageSpec": {
+              "useSeparateLightDarkImages": true,
+              "image": {
+                "sourceLight": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDg3NUEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4NzVBO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gPT09PT09PT09PSBRVUVUWkFMIE1BUksg4oCUIGFic3RyYWN0LCBtaW5pbWFsID09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CgogICAgPCEtLSBMb25nIHRhaWwg4oCUIHNpbmdsZSBlbGVnYW50IFMtY3VydmUsIFRIRSBzaWduYXR1cmUgZWxlbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTI1LDE5NSBDIDEyMCwyNDAgMTA1LDMxMCA5NSwzNzAgUSA5MCw0MDAgMTAwLDQwMCBRIDExMCw0MDAgMTA4LDM3MCBDIDExNSwzMTAgMTI1LDI0MCAxMzAsMTk1IgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiLz4KICAgIDxwYXRoIGQ9Ik0gMTA1LDE5MCBDIDg1LDI0MCA1NSwzMjAgMzUsMzc1IFEgMjgsMzk1IDM4LDM5OCBRIDQ4LDM5OCA1MiwzNzggQyA3MCwzMjUgOTIsMjQ1IDExMCwxOTIiCiAgICAgICAgICBmaWxsPSJ1cmwoI3RhaWxGYWRlKSIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNIDE0NSwxOTAgQyAxNjUsMjQwIDE5NSwzMjAgMjE1LDM3NSBRIDIyMiwzOTUgMjEyLDM5OCBRIDIwMiwzOTggMTk4LDM3OCBDIDE4MCwzMjUgMTU4LDI0NSAxNDAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNiIvPgoKICAgIDwhLS0gQm9keSDigJQgY2xlYW4gcm91bmRlZCBzaGFwZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgoKICAgIDwhLS0gQ2hlc3Qg4oCUIHF1ZXR6YWwncyByZWQgYnJlYXN0IC0tPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KCiAgICA8IS0tIFdpbmcgbGVmdCAtLT4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIgogICAgICAgICAgZmlsbD0iIzAwNEQzRCIvPgoKICAgIDwhLS0gV2luZyByaWdodCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTYwLDk1IEMgMjE1LDU1IDI1NSw4MCAyMzUsMTIwIEMgMjIyLDE0NSAxOTAsMTUwIDE2OCwxMzUgWiIKICAgICAgICAgIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIEhlYWQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMzQiIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIENyZXN0IOKAlCAzIGNsZWFuIHN0cm9rZXMgLS0+CiAgICA8bGluZSB4MT0iMTEyIiB5MT0iMzAiIHgyPSIxMDgiIHkyPSI4IiBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSIyNiIgeDI9IjEyNSIgeTI9IjIiICBzdHJva2U9IiMwMDg3NUEiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMzgiIHkxPSIzMCIgeDI9IjE0MiIgeTI9IjgiICBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgICA8IS0tIEV5ZSAtLT4KICAgIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjU1IiByPSI5IiAgIGZpbGw9IiNGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjUzLjUiIHI9IjQuNSIgZmlsbD0iIzFBMUEyRSIvPgogICAgPGNpcmNsZSBjeD0iMTQyIiBjeT0iNTEuNSIgcj0iMS41IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjciLz4KCiAgICA8IS0tIEJlYWsg4oCUIGNsZWFuIHNoYXJwIGdvbGQgLS0+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPCEtLSA9PT09PT09PT09IFRZUE9HUkFQSFkgPT09PT09PT09PSAtLT4KCiAgPCEtLSBRVUVUWkFMIC0tPgogIDx0ZXh0IHg9IjMzMCIgeT0iMTc4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSI1IgogICAgICAgIGZpbGw9IiMxQTFBMkUiPlFVRVRaQUw8L3RleHQ+CgogIDwhLS0gR29sZCBkaXZpZGVyIC0tPgogIDxsaW5lIHgxPSIzMzIiIHkxPSIxOTgiIHgyPSI4MTAiIHkyPSIxOTgiCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2dvbGRMaW5lKSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjYiLz4KCiAgPCEtLSBURUxFQ09NIC0tPgogIDx0ZXh0IHg9IjMzNCIgeT0iMjM4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMzQiIGZvbnQtd2VpZ2h0PSIzMDAiIGxldHRlci1zcGFjaW5nPSIxNCIKICAgICAgICBmaWxsPSIjMDA4NzVBIj5URUxFQ09NPC90ZXh0PgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIzMzQiIHk9IjI4MCIKICAgICAgICBmb250LWZhbWlseT0iJ0hlbHZldGljYSBOZXVlJywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iMSIKICAgICAgICBmaWxsPSIjNzc3Nzc3Ij5UdSBtdW5kby4gU2luIGZyb250ZXJhcy48L3RleHQ+Cgo8L3N2Zz4="
+                },
+                "sourceDark": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEMwN0IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBDMDdCO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gRGFyayBCRyAtLT4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCIgcng9IjAiIGZpbGw9IiMxMTE4MjciLz4KCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CiAgICA8cGF0aCBkPSJNIDEyNSwxOTUgQyAxMjAsMjQwIDEwNSwzMTAgOTUsMzcwIFEgOTAsNDAwIDEwMCw0MDAgUSAxMTAsNDAwIDEwOCwzNzAgQyAxMTUsMzEwIDEyNSwyNDAgMTMwLDE5NSIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIi8+CiAgICA8cGF0aCBkPSJNIDEwNSwxOTAgQyA4NSwyNDAgNTUsMzIwIDM1LDM3NSBRIDI4LDM5NSAzOCwzOTggUSA0OCwzOTggNTIsMzc4IEMgNzAsMzI1IDkyLDI0NSAxMTAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTSAxNDUsMTkwIEMgMTY1LDI0MCAxOTUsMzIwIDIxNSwzNzUgUSAyMjIsMzk1IDIxMiwzOTggUSAyMDIsMzk4IDE5OCwzNzggQyAxODAsMzI1IDE1OCwyNDUgMTQwLDE5MiIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIiBmaWxsPSIjMDA0RDNEIi8+CiAgICA8cGF0aCBkPSJNIDE2MCw5NSBDIDIxNSw1NSAyNTUsODAgMjM1LDEyMCBDIDIyMiwxNDUgMTkwLDE1MCAxNjgsMTM1IFoiIGZpbGw9IiMwMDREM0QiLz4KICAgIDxjaXJjbGUgY3g9IjEyNSIgY3k9IjYwIiByPSIzNCIgZmlsbD0iIzAwNEQzRCIvPgogICAgPGxpbmUgeDE9IjExMiIgeTE9IjMwIiB4Mj0iMTA4IiB5Mj0iOCIgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iMjYiIHgyPSIxMjUiIHkyPSIyIiAgc3Ryb2tlPSIjMDA4NzVBIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTM4IiB5MT0iMzAiIHgyPSIxNDIiIHkyPSI4IiAgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSI1NSIgcj0iOSIgICBmaWxsPSIjRkZGIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI1My41IiByPSI0LjUiIGZpbGw9IiMxQTFBMkUiLz4KICAgIDxjaXJjbGUgY3g9IjE0MiIgY3k9IjUxLjUiIHI9IjEuNSIgZmlsbD0iI0ZGRiIgb3BhY2l0eT0iMC43Ii8+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPHRleHQgeD0iMzMwIiB5PSIxNzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjUiCiAgICAgICAgZmlsbD0iI0YwRjBGMCI+UVVFVFpBTDwvdGV4dD4KICA8bGluZSB4MT0iMzMyIiB5MT0iMTk4IiB4Mj0iODEwIiB5Mj0iMTk4IgogICAgICAgIHN0cm9rZT0idXJsKCNnb2xkTGluZSkiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgPHRleHQgeD0iMzM0IiB5PSIyMzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjMwMCIgbGV0dGVyLXNwYWNpbmc9IjE0IgogICAgICAgIGZpbGw9IiMwMEMwN0IiPlRFTEVDT008L3RleHQ+CiAgPHRleHQgeD0iMzM0IiB5PSIyODAiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjEiCiAgICAgICAgZmlsbD0iIzg4ODg4OCI+VHUgbXVuZG8uIFNpbiBmcm9udGVyYXMuPC90ZXh0Pgo8L3N2Zz4="
+                },
+                "altText": "Quetzal Telecom Logo"
+              },
+              "frame": {},
+              "style": {
+                "sizeMode": "SIZE_MODE_FIT",
+                "horizontalAlign": "HORIZONTAL_ALIGN_CENTER",
+                "verticalAlign": "VERTICAL_ALIGN_CENTER"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "red",
+      "displayName": "Operaciones de Red",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 📡 Operaciones de Red\n",
+                "Salud de infraestructura, latencia, throughput y alertas de 1,424 torres"
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 9,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_latencia",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(latencia_promedio)",
+                      "expression": "MEASURE(`latencia_promedio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Latencia Promedio por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(latencia_promedio)",
+                  "displayName": "latencia_promedio",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_uptime",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(uptime)",
+                      "expression": "MEASURE(`uptime`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Uptime por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(uptime)",
+                  "displayName": "uptime",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_torres",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(torres_en_alerta)",
+                      "expression": "MEASURE(`torres_en_alerta`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Torres en Alerta"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(torres_en_alerta)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_throughput",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(throughput_promedio)",
+                      "expression": "MEASURE(`throughput_promedio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Throughput Promedio (Mbps)"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(throughput_promedio)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 4,
+            "y": 7,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "kpi_packetloss",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "measure(packet_loss_promedio)",
+                      "expression": "MEASURE(`packet_loss_promedio`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Packet Loss Promedio %"
+              },
+              "version": 2,
+              "widgetType": "counter",
+              "encodings": {
+                "value": {
+                  "fieldName": "measure(packet_loss_promedio)",
+                  "rowNumber": 0
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 8,
+            "y": 7,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_suscripciones",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(suscripciones_activas)",
+                      "expression": "MEASURE(`suscripciones_activas`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Suscripciones Activas por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(suscripciones_activas)",
+                  "displayName": "suscripciones_activas",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 10,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "bar_churn",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "mv_red",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "measure(tasa_churn)",
+                      "expression": "MEASURE(`tasa_churn`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Tasa de Churn por País"
+              },
+              "version": 3,
+              "widgetType": "bar",
+              "encodings": {
+                "x": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "y": {
+                  "fieldName": "measure(tasa_churn)",
+                  "displayName": "tasa_churn",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                },
+                "color": {
+                  "fieldName": "pais",
+                  "displayName": "pais",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 10,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "logo",
+            "imageSpec": {
+              "useSeparateLightDarkImages": true,
+              "image": {
+                "sourceLight": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDg3NUEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4NzVBO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gPT09PT09PT09PSBRVUVUWkFMIE1BUksg4oCUIGFic3RyYWN0LCBtaW5pbWFsID09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CgogICAgPCEtLSBMb25nIHRhaWwg4oCUIHNpbmdsZSBlbGVnYW50IFMtY3VydmUsIFRIRSBzaWduYXR1cmUgZWxlbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTI1LDE5NSBDIDEyMCwyNDAgMTA1LDMxMCA5NSwzNzAgUSA5MCw0MDAgMTAwLDQwMCBRIDExMCw0MDAgMTA4LDM3MCBDIDExNSwzMTAgMTI1LDI0MCAxMzAsMTk1IgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiLz4KICAgIDxwYXRoIGQ9Ik0gMTA1LDE5MCBDIDg1LDI0MCA1NSwzMjAgMzUsMzc1IFEgMjgsMzk1IDM4LDM5OCBRIDQ4LDM5OCA1MiwzNzggQyA3MCwzMjUgOTIsMjQ1IDExMCwxOTIiCiAgICAgICAgICBmaWxsPSJ1cmwoI3RhaWxGYWRlKSIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNIDE0NSwxOTAgQyAxNjUsMjQwIDE5NSwzMjAgMjE1LDM3NSBRIDIyMiwzOTUgMjEyLDM5OCBRIDIwMiwzOTggMTk4LDM3OCBDIDE4MCwzMjUgMTU4LDI0NSAxNDAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNiIvPgoKICAgIDwhLS0gQm9keSDigJQgY2xlYW4gcm91bmRlZCBzaGFwZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgoKICAgIDwhLS0gQ2hlc3Qg4oCUIHF1ZXR6YWwncyByZWQgYnJlYXN0IC0tPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KCiAgICA8IS0tIFdpbmcgbGVmdCAtLT4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIgogICAgICAgICAgZmlsbD0iIzAwNEQzRCIvPgoKICAgIDwhLS0gV2luZyByaWdodCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTYwLDk1IEMgMjE1LDU1IDI1NSw4MCAyMzUsMTIwIEMgMjIyLDE0NSAxOTAsMTUwIDE2OCwxMzUgWiIKICAgICAgICAgIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIEhlYWQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMzQiIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIENyZXN0IOKAlCAzIGNsZWFuIHN0cm9rZXMgLS0+CiAgICA8bGluZSB4MT0iMTEyIiB5MT0iMzAiIHgyPSIxMDgiIHkyPSI4IiBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSIyNiIgeDI9IjEyNSIgeTI9IjIiICBzdHJva2U9IiMwMDg3NUEiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMzgiIHkxPSIzMCIgeDI9IjE0MiIgeTI9IjgiICBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgICA8IS0tIEV5ZSAtLT4KICAgIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjU1IiByPSI5IiAgIGZpbGw9IiNGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjUzLjUiIHI9IjQuNSIgZmlsbD0iIzFBMUEyRSIvPgogICAgPGNpcmNsZSBjeD0iMTQyIiBjeT0iNTEuNSIgcj0iMS41IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjciLz4KCiAgICA8IS0tIEJlYWsg4oCUIGNsZWFuIHNoYXJwIGdvbGQgLS0+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPCEtLSA9PT09PT09PT09IFRZUE9HUkFQSFkgPT09PT09PT09PSAtLT4KCiAgPCEtLSBRVUVUWkFMIC0tPgogIDx0ZXh0IHg9IjMzMCIgeT0iMTc4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSI1IgogICAgICAgIGZpbGw9IiMxQTFBMkUiPlFVRVRaQUw8L3RleHQ+CgogIDwhLS0gR29sZCBkaXZpZGVyIC0tPgogIDxsaW5lIHgxPSIzMzIiIHkxPSIxOTgiIHgyPSI4MTAiIHkyPSIxOTgiCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2dvbGRMaW5lKSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjYiLz4KCiAgPCEtLSBURUxFQ09NIC0tPgogIDx0ZXh0IHg9IjMzNCIgeT0iMjM4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMzQiIGZvbnQtd2VpZ2h0PSIzMDAiIGxldHRlci1zcGFjaW5nPSIxNCIKICAgICAgICBmaWxsPSIjMDA4NzVBIj5URUxFQ09NPC90ZXh0PgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIzMzQiIHk9IjI4MCIKICAgICAgICBmb250LWZhbWlseT0iJ0hlbHZldGljYSBOZXVlJywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iMSIKICAgICAgICBmaWxsPSIjNzc3Nzc3Ij5UdSBtdW5kby4gU2luIGZyb250ZXJhcy48L3RleHQ+Cgo8L3N2Zz4="
+                },
+                "sourceDark": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEMwN0IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBDMDdCO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gRGFyayBCRyAtLT4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCIgcng9IjAiIGZpbGw9IiMxMTE4MjciLz4KCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CiAgICA8cGF0aCBkPSJNIDEyNSwxOTUgQyAxMjAsMjQwIDEwNSwzMTAgOTUsMzcwIFEgOTAsNDAwIDEwMCw0MDAgUSAxMTAsNDAwIDEwOCwzNzAgQyAxMTUsMzEwIDEyNSwyNDAgMTMwLDE5NSIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIi8+CiAgICA8cGF0aCBkPSJNIDEwNSwxOTAgQyA4NSwyNDAgNTUsMzIwIDM1LDM3NSBRIDI4LDM5NSAzOCwzOTggUSA0OCwzOTggNTIsMzc4IEMgNzAsMzI1IDkyLDI0NSAxMTAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTSAxNDUsMTkwIEMgMTY1LDI0MCAxOTUsMzIwIDIxNSwzNzUgUSAyMjIsMzk1IDIxMiwzOTggUSAyMDIsMzk4IDE5OCwzNzggQyAxODAsMzI1IDE1OCwyNDUgMTQwLDE5MiIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIiBmaWxsPSIjMDA0RDNEIi8+CiAgICA8cGF0aCBkPSJNIDE2MCw5NSBDIDIxNSw1NSAyNTUsODAgMjM1LDEyMCBDIDIyMiwxNDUgMTkwLDE1MCAxNjgsMTM1IFoiIGZpbGw9IiMwMDREM0QiLz4KICAgIDxjaXJjbGUgY3g9IjEyNSIgY3k9IjYwIiByPSIzNCIgZmlsbD0iIzAwNEQzRCIvPgogICAgPGxpbmUgeDE9IjExMiIgeTE9IjMwIiB4Mj0iMTA4IiB5Mj0iOCIgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iMjYiIHgyPSIxMjUiIHkyPSIyIiAgc3Ryb2tlPSIjMDA4NzVBIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTM4IiB5MT0iMzAiIHgyPSIxNDIiIHkyPSI4IiAgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSI1NSIgcj0iOSIgICBmaWxsPSIjRkZGIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI1My41IiByPSI0LjUiIGZpbGw9IiMxQTFBMkUiLz4KICAgIDxjaXJjbGUgY3g9IjE0MiIgY3k9IjUxLjUiIHI9IjEuNSIgZmlsbD0iI0ZGRiIgb3BhY2l0eT0iMC43Ii8+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPHRleHQgeD0iMzMwIiB5PSIxNzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjUiCiAgICAgICAgZmlsbD0iI0YwRjBGMCI+UVVFVFpBTDwvdGV4dD4KICA8bGluZSB4MT0iMzMyIiB5MT0iMTk4IiB4Mj0iODEwIiB5Mj0iMTk4IgogICAgICAgIHN0cm9rZT0idXJsKCNnb2xkTGluZSkiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgPHRleHQgeD0iMzM0IiB5PSIyMzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjMwMCIgbGV0dGVyLXNwYWNpbmc9IjE0IgogICAgICAgIGZpbGw9IiMwMEMwN0IiPlRFTEVDT008L3RleHQ+CiAgPHRleHQgeD0iMzM0IiB5PSIyODAiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjEiCiAgICAgICAgZmlsbD0iIzg4ODg4OCI+VHUgbXVuZG8uIFNpbiBmcm9udGVyYXMuPC90ZXh0Pgo8L3N2Zz4="
+                },
+                "altText": "Quetzal Telecom Logo"
+              },
+              "frame": {},
+              "style": {
+                "sizeMode": "SIZE_MODE_FIT",
+                "horizontalAlign": "HORIZONTAL_ALIGN_CENTER",
+                "verticalAlign": "VERTICAL_ALIGN_CENTER"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "forecast",
+      "displayName": "Pronósticos IA",
+      "layout": [
+        {
+          "widget": {
+            "name": "header",
+            "multilineTextboxSpec": {
+              "lines": [
+                "## 🤖 Pronósticos con IA\n",
+                "Proyección automática a 4 meses usando `ai_forecast()` v2 — una sola línea de SQL genera predicciones ML con intervalos de confianza al 95%"
+              ]
+            }
+          },
+          "position": {
+            "x": 3,
+            "y": 0,
+            "width": 9,
+            "height": 2
+          }
+        },
+        {
+          "widget": {
+            "name": "line_forecast_rev",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "forecast_revenue",
+                  "fields": [
+                    {
+                      "name": "ds",
+                      "expression": "`ds`"
+                    },
+                    {
+                      "name": "ingresos_forecast",
+                      "expression": "`ingresos_forecast`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Pronóstico de Ingresos",
+                  "fields": []
+                }
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "ds",
+                  "displayName": "Fecha",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "ingresos_forecast",
+                  "displayName": "Ingresos Forecast (USD)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "line_forecast_churn",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "forecast_churn",
+                  "fields": [
+                    {
+                      "name": "ds",
+                      "expression": "`ds`"
+                    },
+                    {
+                      "name": "facturacion_forecast",
+                      "expression": "`facturacion_forecast`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Pronóstico de Facturación Total"
+              },
+              "version": 3,
+              "widgetType": "line",
+              "encodings": {
+                "x": {
+                  "fieldName": "ds",
+                  "displayName": "Fecha",
+                  "scale": {
+                    "type": "temporal"
+                  }
+                },
+                "y": {
+                  "fieldName": "facturacion_forecast",
+                  "displayName": "Facturación Forecast (USD)",
+                  "scale": {
+                    "type": "quantitative"
+                  }
+                }
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 2,
+            "width": 6,
+            "height": 6
+          }
+        },
+        {
+          "widget": {
+            "name": "tabla_forecast_rev",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "forecast_revenue",
+                  "fields": [
+                    {
+                      "name": "ds",
+                      "expression": "`ds`"
+                    },
+                    {
+                      "name": "ingresos_forecast",
+                      "expression": "`ingresos_forecast`"
+                    },
+                    {
+                      "name": "ingresos_upper",
+                      "expression": "`ingresos_upper`"
+                    },
+                    {
+                      "name": "ingresos_lower",
+                      "expression": "`ingresos_lower`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": {
+                  "value": "Datos de Pronóstico — Ingresos",
+                  "fields": []
+                }
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "ds"
+                  },
+                  {
+                    "fieldName": "ingresos_forecast"
+                  },
+                  {
+                    "fieldName": "ingresos_upper"
+                  },
+                  {
+                    "fieldName": "ingresos_lower"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 8,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "tabla_forecast_churn",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "forecast_churn",
+                  "fields": [
+                    {
+                      "name": "ds",
+                      "expression": "`ds`"
+                    },
+                    {
+                      "name": "facturacion_forecast",
+                      "expression": "`facturacion_forecast`"
+                    },
+                    {
+                      "name": "facturacion_upper",
+                      "expression": "`facturacion_upper`"
+                    },
+                    {
+                      "name": "facturacion_lower",
+                      "expression": "`facturacion_lower`"
+                    }
+                  ],
+                  "disaggregated": true
+                }
+              }
+            ],
+            "spec": {
+              "frame": {
+                "showTitle": true,
+                "title": "Datos de Pronóstico — Facturación"
+              },
+              "version": 2,
+              "widgetType": "table",
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "ds"
+                  },
+                  {
+                    "fieldName": "facturacion_forecast"
+                  },
+                  {
+                    "fieldName": "facturacion_upper"
+                  },
+                  {
+                    "fieldName": "facturacion_lower"
+                  }
+                ]
+              },
+              "data": {
+                "queryName": "main_query"
+              }
+            }
+          },
+          "position": {
+            "x": 6,
+            "y": 8,
+            "width": 6,
+            "height": 5
+          }
+        },
+        {
+          "widget": {
+            "name": "logo",
+            "imageSpec": {
+              "useSeparateLightDarkImages": true,
+              "image": {
+                "sourceLight": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDg3NUEiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDA4NzVBO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gPT09PT09PT09PSBRVUVUWkFMIE1BUksg4oCUIGFic3RyYWN0LCBtaW5pbWFsID09PT09PT09PT0gLS0+CiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CgogICAgPCEtLSBMb25nIHRhaWwg4oCUIHNpbmdsZSBlbGVnYW50IFMtY3VydmUsIFRIRSBzaWduYXR1cmUgZWxlbWVudCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTI1LDE5NSBDIDEyMCwyNDAgMTA1LDMxMCA5NSwzNzAgUSA5MCw0MDAgMTAwLDQwMCBRIDExMCw0MDAgMTA4LDM3MCBDIDExNSwzMTAgMTI1LDI0MCAxMzAsMTk1IgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiLz4KICAgIDxwYXRoIGQ9Ik0gMTA1LDE5MCBDIDg1LDI0MCA1NSwzMjAgMzUsMzc1IFEgMjgsMzk1IDM4LDM5OCBRIDQ4LDM5OCA1MiwzNzggQyA3MCwzMjUgOTIsMjQ1IDExMCwxOTIiCiAgICAgICAgICBmaWxsPSJ1cmwoI3RhaWxGYWRlKSIgb3BhY2l0eT0iMC42Ii8+CiAgICA8cGF0aCBkPSJNIDE0NSwxOTAgQyAxNjUsMjQwIDE5NSwzMjAgMjE1LDM3NSBRIDIyMiwzOTUgMjEyLDM5OCBRIDIwMiwzOTggMTk4LDM3OCBDIDE4MCwzMjUgMTU4LDI0NSAxNDAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNiIvPgoKICAgIDwhLS0gQm9keSDigJQgY2xlYW4gcm91bmRlZCBzaGFwZSAtLT4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgoKICAgIDwhLS0gQ2hlc3Qg4oCUIHF1ZXR6YWwncyByZWQgYnJlYXN0IC0tPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KCiAgICA8IS0tIFdpbmcgbGVmdCAtLT4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIgogICAgICAgICAgZmlsbD0iIzAwNEQzRCIvPgoKICAgIDwhLS0gV2luZyByaWdodCAtLT4KICAgIDxwYXRoIGQ9Ik0gMTYwLDk1IEMgMjE1LDU1IDI1NSw4MCAyMzUsMTIwIEMgMjIyLDE0NSAxOTAsMTUwIDE2OCwxMzUgWiIKICAgICAgICAgIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIEhlYWQgLS0+CiAgICA8Y2lyY2xlIGN4PSIxMjUiIGN5PSI2MCIgcj0iMzQiIGZpbGw9IiMwMDREM0QiLz4KCiAgICA8IS0tIENyZXN0IOKAlCAzIGNsZWFuIHN0cm9rZXMgLS0+CiAgICA8bGluZSB4MT0iMTEyIiB5MT0iMzAiIHgyPSIxMDgiIHkyPSI4IiBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMjUiIHkxPSIyNiIgeDI9IjEyNSIgeTI9IjIiICBzdHJva2U9IiMwMDg3NUEiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KICAgIDxsaW5lIHgxPSIxMzgiIHkxPSIzMCIgeDI9IjE0MiIgeTI9IjgiICBzdHJva2U9IiMwMEMwN0IiIHN0cm9rZS13aWR0aD0iMi44IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KCiAgICA8IS0tIEV5ZSAtLT4KICAgIDxjaXJjbGUgY3g9IjEzOCIgY3k9IjU1IiByPSI5IiAgIGZpbGw9IiNGRkYiLz4KICAgIDxjaXJjbGUgY3g9IjE0MCIgY3k9IjUzLjUiIHI9IjQuNSIgZmlsbD0iIzFBMUEyRSIvPgogICAgPGNpcmNsZSBjeD0iMTQyIiBjeT0iNTEuNSIgcj0iMS41IiBmaWxsPSIjRkZGIiBvcGFjaXR5PSIwLjciLz4KCiAgICA8IS0tIEJlYWsg4oCUIGNsZWFuIHNoYXJwIGdvbGQgLS0+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPCEtLSA9PT09PT09PT09IFRZUE9HUkFQSFkgPT09PT09PT09PSAtLT4KCiAgPCEtLSBRVUVUWkFMIC0tPgogIDx0ZXh0IHg9IjMzMCIgeT0iMTc4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iODAiIGZvbnQtd2VpZ2h0PSI3MDAiIGxldHRlci1zcGFjaW5nPSI1IgogICAgICAgIGZpbGw9IiMxQTFBMkUiPlFVRVRaQUw8L3RleHQ+CgogIDwhLS0gR29sZCBkaXZpZGVyIC0tPgogIDxsaW5lIHgxPSIzMzIiIHkxPSIxOTgiIHgyPSI4MTAiIHkyPSIxOTgiCiAgICAgICAgc3Ryb2tlPSJ1cmwoI2dvbGRMaW5lKSIgc3Ryb2tlLXdpZHRoPSIyIiBvcGFjaXR5PSIwLjYiLz4KCiAgPCEtLSBURUxFQ09NIC0tPgogIDx0ZXh0IHg9IjMzNCIgeT0iMjM4IgogICAgICAgIGZvbnQtZmFtaWx5PSInSGVsdmV0aWNhIE5ldWUnLCBIZWx2ZXRpY2EsIEFyaWFsLCBzYW5zLXNlcmlmIgogICAgICAgIGZvbnQtc2l6ZT0iMzQiIGZvbnQtd2VpZ2h0PSIzMDAiIGxldHRlci1zcGFjaW5nPSIxNCIKICAgICAgICBmaWxsPSIjMDA4NzVBIj5URUxFQ09NPC90ZXh0PgoKICA8IS0tIFNsb2dhbiAtLT4KICA8dGV4dCB4PSIzMzQiIHk9IjI4MCIKICAgICAgICBmb250LWZhbWlseT0iJ0hlbHZldGljYSBOZXVlJywgSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIKICAgICAgICBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIiBsZXR0ZXItc3BhY2luZz0iMSIKICAgICAgICBmaWxsPSIjNzc3Nzc3Ij5UdSBtdW5kby4gU2luIGZyb250ZXJhcy48L3RleHQ+Cgo8L3N2Zz4="
+                },
+                "sourceDark": {
+                  "url": "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNDIwIiB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImJvZHlHcmFkIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzAwQzA3QiIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMDREM0QiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InRhaWxGYWRlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjAlIiB5Mj0iMTAwJSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiMwMEMwN0IiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojMDBDMDdCO3N0b3Atb3BhY2l0eTowIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnb2xkTGluZSIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRDRBMDE3Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0Y0QzQzMCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CgogIDwhLS0gRGFyayBCRyAtLT4KICA8cmVjdCB3aWR0aD0iOTAwIiBoZWlnaHQ9IjQyMCIgcng9IjAiIGZpbGw9IiMxMTE4MjciLz4KCiAgPGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoODAsIDU1KSBzY2FsZSgwLjcyKSI+CiAgICA8cGF0aCBkPSJNIDEyNSwxOTUgQyAxMjAsMjQwIDEwNSwzMTAgOTUsMzcwIFEgOTAsNDAwIDEwMCw0MDAgUSAxMTAsNDAwIDEwOCwzNzAgQyAxMTUsMzEwIDEyNSwyNDAgMTMwLDE5NSIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIi8+CiAgICA8cGF0aCBkPSJNIDEwNSwxOTAgQyA4NSwyNDAgNTUsMzIwIDM1LDM3NSBRIDI4LDM5NSAzOCwzOTggUSA0OCwzOTggNTIsMzc4IEMgNzAsMzI1IDkyLDI0NSAxMTAsMTkyIgogICAgICAgICAgZmlsbD0idXJsKCN0YWlsRmFkZSkiIG9wYWNpdHk9IjAuNSIvPgogICAgPHBhdGggZD0iTSAxNDUsMTkwIEMgMTY1LDI0MCAxOTUsMzIwIDIxNSwzNzUgUSAyMjIsMzk1IDIxMiwzOTggUSAyMDIsMzk4IDE5OCwzNzggQyAxODAsMzI1IDE1OCwyNDUgMTQwLDE5MiIKICAgICAgICAgIGZpbGw9InVybCgjdGFpbEZhZGUpIiBvcGFjaXR5PSIwLjUiLz4KICAgIDxlbGxpcHNlIGN4PSIxMjUiIGN5PSIxMzAiIHJ4PSI1MiIgcnk9IjY4IiBmaWxsPSJ1cmwoI2JvZHlHcmFkKSIvPgogICAgPGVsbGlwc2UgY3g9IjEyNSIgY3k9IjE1MiIgcng9IjMwIiByeT0iMzIiIGZpbGw9IiNFNjM5NDYiIG9wYWNpdHk9IjAuODUiLz4KICAgIDxwYXRoIGQ9Ik0gOTAsOTUgQyAzNSw1NSAtNSw4MCAxNSwxMjAgQyAyOCwxNDUgNjAsMTUwIDgyLDEzNSBaIiBmaWxsPSIjMDA0RDNEIi8+CiAgICA8cGF0aCBkPSJNIDE2MCw5NSBDIDIxNSw1NSAyNTUsODAgMjM1LDEyMCBDIDIyMiwxNDUgMTkwLDE1MCAxNjgsMTM1IFoiIGZpbGw9IiMwMDREM0QiLz4KICAgIDxjaXJjbGUgY3g9IjEyNSIgY3k9IjYwIiByPSIzNCIgZmlsbD0iIzAwNEQzRCIvPgogICAgPGxpbmUgeDE9IjExMiIgeTE9IjMwIiB4Mj0iMTA4IiB5Mj0iOCIgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTI1IiB5MT0iMjYiIHgyPSIxMjUiIHkyPSIyIiAgc3Ryb2tlPSIjMDA4NzVBIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8bGluZSB4MT0iMTM4IiB5MT0iMzAiIHgyPSIxNDIiIHkyPSI4IiAgc3Ryb2tlPSIjMDBDMDdCIiBzdHJva2Utd2lkdGg9IjIuOCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CiAgICA8Y2lyY2xlIGN4PSIxMzgiIGN5PSI1NSIgcj0iOSIgICBmaWxsPSIjRkZGIi8+CiAgICA8Y2lyY2xlIGN4PSIxNDAiIGN5PSI1My41IiByPSI0LjUiIGZpbGw9IiMxQTFBMkUiLz4KICAgIDxjaXJjbGUgY3g9IjE0MiIgY3k9IjUxLjUiIHI9IjEuNSIgZmlsbD0iI0ZGRiIgb3BhY2l0eT0iMC43Ii8+CiAgICA8cGF0aCBkPSJNIDE1NSw1OCBMIDE4NSw2OCBMIDE1NSw3NiBaIiBmaWxsPSJ1cmwoI2dvbGRMaW5lKSIvPgogIDwvZz4KCiAgPHRleHQgeD0iMzMwIiB5PSIxNzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSI4MCIgZm9udC13ZWlnaHQ9IjcwMCIgbGV0dGVyLXNwYWNpbmc9IjUiCiAgICAgICAgZmlsbD0iI0YwRjBGMCI+UVVFVFpBTDwvdGV4dD4KICA8bGluZSB4MT0iMzMyIiB5MT0iMTk4IiB4Mj0iODEwIiB5Mj0iMTk4IgogICAgICAgIHN0cm9rZT0idXJsKCNnb2xkTGluZSkiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41Ii8+CiAgPHRleHQgeD0iMzM0IiB5PSIyMzgiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjMwMCIgbGV0dGVyLXNwYWNpbmc9IjE0IgogICAgICAgIGZpbGw9IiMwMEMwN0IiPlRFTEVDT008L3RleHQ+CiAgPHRleHQgeD0iMzM0IiB5PSIyODAiCiAgICAgICAgZm9udC1mYW1pbHk9IidIZWx2ZXRpY2EgTmV1ZScsIEhlbHZldGljYSwgQXJpYWwsIHNhbnMtc2VyaWYiCiAgICAgICAgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjQwMCIgbGV0dGVyLXNwYWNpbmc9IjEiCiAgICAgICAgZmlsbD0iIzg4ODg4OCI+VHUgbXVuZG8uIFNpbiBmcm9udGVyYXMuPC90ZXh0Pgo8L3N2Zz4="
+                },
+                "altText": "Quetzal Telecom Logo"
+              },
+              "frame": {},
+              "style": {
+                "sizeMode": "SIZE_MODE_FIT",
+                "horizontalAlign": "HORIZONTAL_ALIGN_CENTER",
+                "verticalAlign": "VERTICAL_ALIGN_CENTER"
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 2
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_CANVAS",
+      "layoutVersion": "GRID_V1"
+    },
+    {
+      "name": "global_filters",
+      "displayName": "Global Filters",
+      "layout": [
+        {
+          "widget": {
+            "name": "filtro_pais",
+            "queries": [
+              {
+                "name": "dashboards/01f1a73df38b1c91b35a5f7ca8c8d732/datasets/01f1a73e30381f7ba1fa304f5cd178af_pais",
+                "query": {
+                  "datasetName": "mv_ingresos",
+                  "fields": [
+                    {
+                      "name": "pais",
+                      "expression": "`pais`"
+                    },
+                    {
+                      "name": "pais_associativity",
+                      "expression": "COUNT_IF(`associative_filter_predicate_group`)"
+                    }
+                  ],
+                  "disaggregated": false
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "frame": {
+                "showTitle": true,
+                "title": "País"
+              },
+              "widgetType": "filter-multi-select",
+              "encodings": {
+                "fields": [
+                  {
+                    "fieldName": "pais",
+                    "queryName": "dashboards/01f1a73df38b1c91b35a5f7ca8c8d732/datasets/01f1a73e30381f7ba1fa304f5cd178af_pais"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          }
+        }
+      ],
+      "pageType": "PAGE_TYPE_GLOBAL_FILTERS",
+      "layoutVersion": "GRID_V1"
+    }
+  ],
+  "uiSettings": {
+    "theme": {
+      "canvasBackgroundColor": {
+        "light": "#EBEBEB",
+        "dark": "#0A1A14"
+      },
+      "widgetBackgroundColor": {
+        "light": "#FCFCFD",
+        "dark": "#0F2920"
+      },
+      "widgetBorderColor": {
+        "light": "#FCFCFD",
+        "dark": "#1A3D30"
+      },
+      "fontColor": {
+        "light": "#11171C",
+        "dark": "#E8ECF0"
+      },
+      "selectionColor": {
+        "light": "#00875A",
+        "dark": "#00875A"
+      },
+      "visualizationColors": [
+        "#00875A",
+        "#004D3D",
+        "#E63946",
+        "#D4A017",
+        "#F4C430",
+        "#2375A8",
+        "#15AFDD",
+        "#52A870",
+        "#C85070"
+      ],
+      "widgetHeaderAlignment": "LEFT",
+      "fontFamily": "Noto Sans",
+      "widgetPadding": 16,
+      "widgetMargin": 8,
+      "widgetCornerRadius": 12,
+      "widgetShadow": 5,
+      "fontSettings": {
+        "base": {
+          "fontFamily": "Noto Sans",
+          "fontColor": {
+            "light": "#1A2E28",
+            "dark": "#E8EDE9"
+          }
+        },
+        "widgetTitle": {
+          "fontFamily": "Inter",
+          "fontColor": {
+            "light": "#004D3D",
+            "dark": "#00875A"
+          },
+          "fontSize": 16,
+          "fontWeight": 600
+        }
+      }
+    },
+    "applyModeEnabled": false
+  }
+}
+

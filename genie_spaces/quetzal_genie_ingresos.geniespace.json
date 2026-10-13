@@ -1,0 +1,268 @@
+{
+  "config": {
+    "sample_questions": [
+      {
+        "id": "01f1a73bbb791881a968742f69b60c74",
+        "question": [
+          "Cual es el revenue total por pais en el ultimo mes?"
+        ]
+      },
+      {
+        "id": "01f1a73bbb9a106ea1cd32f53d71a271",
+        "question": [
+          "Como ha evolucionado el ARPU por segmento mes a mes?"
+        ]
+      },
+      {
+        "id": "01f1a73bbbba17f691a6992d3c193bd0",
+        "question": [
+          "Cual es la tasa de cobro y morosidad por pais?"
+        ]
+      },
+      {
+        "id": "01f1a73bbbdf10188a1bbebb7855d87f",
+        "question": [
+          "Top 10 clientes por gasto mensual total"
+        ]
+      },
+      {
+        "id": "01f1a73bbc0015c290a464e022990c7b",
+        "question": [
+          "Cuantas facturas estan vencidas por mas de 30 dias por pais?"
+        ]
+      },
+      {
+        "id": "01f1a73bbc2317e9a9470941aa9f249c",
+        "question": [
+          "Revenue por vertical (Movil, Internet, TV, Fija, Bundles) por pais"
+        ]
+      }
+    ]
+  },
+  "data_sources": {
+    "tables": [
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_arpu_by_segment"
+      },
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_billing_health"
+      },
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service"
+      },
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes"
+      },
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_facturas"
+      },
+      {
+        "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_suscripciones"
+      }
+    ]
+  },
+  "instructions": {
+    "text_instructions": [{
+      "content": [
+        "Responde en el idioma de la pregunta: español latinoamericano o portugués de Brasil.",
+        "Todos los datos son sintéticos y demostrativos. Informa siempre el período de la fuente consultada.",
+        "Para KPIs operativos mensuales usa el último mes cerrado y excluye el mes corriente y proyecciones futuras.",
+        "Agrega valores monetarios entre países solamente en USD.",
+        "No expongas PII ni identificadores completos de clientes; usa agregaciones por país, segmento y servicio.",
+        "Separa ingreso facturado, ingreso cobrado, cartera vencida y ARPU; no los uses como sinónimos.",
+        "Si una métrica no existe, declara la limitación y no inventes valores."
+      ]
+    }],
+    "example_question_sqls": [
+      {
+        "id": "01f1a73bb578104aad3024b7a2598673",
+        "question": [
+          "Revenue total por pais en el ultimo mes"
+        ],
+        "sql": [
+          "SELECT pais_codigo, SUM(total_revenue_usd) AS revenue_total\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service\n",
+          "WHERE mes = (SELECT MAX(mes) FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service)\n",
+          "GROUP BY pais_codigo\n",
+          "ORDER BY revenue_total DESC"
+        ]
+      },
+      {
+        "id": "01f1a73bb5781481ad67eba0b5d4f171",
+        "question": [
+          "Evolucion del ARPU por segmento mes a mes"
+        ],
+        "sql": [
+          "SELECT mes, segmento_id, \n",
+          "  SUM(total_revenue_usd) / NULLIF(SUM(unique_customers), 0) AS arpu_usd\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_arpu_by_segment\n",
+          "GROUP BY mes, segmento_id\n",
+          "ORDER BY mes, segmento_id"
+        ]
+      },
+      {
+        "id": "01f1a73bb578181a89265a7ab6f64f27",
+        "question": [
+          "Tasa de cobro y morosidad por pais"
+        ],
+        "sql": [
+          "SELECT pais_codigo, \n",
+          "  AVG(pct_pagada) AS pct_pagada_avg,\n",
+          "  AVG(pct_vencida) AS pct_vencida_avg,\n",
+          "  AVG(tasa_cobro_pct) AS tasa_cobro_avg,\n",
+          "  AVG(avg_dias_atraso) AS dias_atraso_avg\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_billing_health\n",
+          "GROUP BY pais_codigo\n",
+          "ORDER BY tasa_cobro_avg DESC"
+        ]
+      },
+      {
+        "id": "01f1a73bb5781b19a96a7078a0d6e3a8",
+        "question": [
+          "Top 10 clientes por gasto mensual"
+        ],
+        "sql": [
+          "SELECT c.cliente_id, c.pais_codigo, c.segmento_id,\n",
+          "  SUM(f.monto_total_usd) AS total_facturado,\n",
+          "  COUNT(f.factura_id) AS num_facturas\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.silver_facturas f\n",
+          "JOIN classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes c ON f.cliente_id = c.cliente_id\n",
+          "GROUP BY c.cliente_id, c.pais_codigo, c.segmento_id\n",
+          "ORDER BY total_facturado DESC\n",
+          "LIMIT 10"
+        ]
+      },
+      {
+        "id": "01f1a73bb5781e34a3e73b6c980a4f1f",
+        "question": [
+          "Revenue por vertical y pais"
+        ],
+        "sql": [
+          "SELECT pais_codigo, vertical, \n",
+          "  SUM(total_revenue_usd) AS revenue_total\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.gold_revenue_by_country_service\n",
+          "GROUP BY pais_codigo, vertical\n",
+          "ORDER BY pais_codigo, revenue_total DESC"
+        ]
+      },
+      {
+        "id": "01f1a73bb579116186531876b28eb27e",
+        "question": [
+          "Facturas vencidas por pais con dias de atraso"
+        ],
+        "sql": [
+          "SELECT c.pais_codigo,\n",
+          "  COUNT(*) AS facturas_vencidas,\n",
+          "  AVG(f.dias_atraso) AS avg_dias_atraso,\n",
+          "  MAX(f.dias_atraso) AS max_dias_atraso\n",
+          "FROM classic_stable_douglas_s_catalog.quetzal_telecom.silver_facturas f\n",
+          "JOIN classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes c ON f.cliente_id = c.cliente_id\n",
+          "WHERE f.estado_pago = 'vencida'\n",
+          "GROUP BY c.pais_codigo\n",
+          "ORDER BY facturas_vencidas DESC"
+        ]
+      }
+    ],
+    "join_specs": [
+      {
+        "comment": [
+          "Facturas a Suscripciones"
+        ],
+        "id": "01f1a73bab631b98bbaadaf5f5c5cb07",
+        "left": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_facturas"
+        },
+        "right": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_suscripciones"
+        },
+        "sql": [
+          "silver_facturas.suscripcion_id = silver_suscripciones.suscripcion_id",
+          "--rt=FROM_RELATIONSHIP_TYPE_MANY_TO_ONE--"
+        ]
+      },
+      {
+        "comment": [
+          "Facturas a Clientes"
+        ],
+        "id": "01f1a73bab6413d494f623a846fee232",
+        "left": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_facturas"
+        },
+        "right": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes"
+        },
+        "sql": [
+          "silver_facturas.cliente_id = silver_clientes.cliente_id",
+          "--rt=FROM_RELATIONSHIP_TYPE_MANY_TO_ONE--"
+        ]
+      },
+      {
+        "comment": [
+          "Suscripciones a Clientes"
+        ],
+        "id": "01f1a73bab64178f834d5d3701ddde93",
+        "left": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_suscripciones"
+        },
+        "right": {
+          "identifier": "classic_stable_douglas_s_catalog.quetzal_telecom.silver_clientes"
+        },
+        "sql": [
+          "silver_suscripciones.cliente_id = silver_clientes.cliente_id",
+          "--rt=FROM_RELATIONSHIP_TYPE_MANY_TO_ONE--"
+        ]
+      }
+    ],
+    "sql_snippets": {
+      "expressions": [
+        {
+          "display_name": "Monto neto de factura",
+          "id": "01f1a73bab6b15b18592c7c8bc716eb5",
+          "sql": [
+            "silver_facturas.monto_base_usd + silver_facturas.ajustes_usd"
+          ]
+        }
+      ],
+      "filters": [
+        {
+          "display_name": "Facturas vencidas",
+          "id": "01f1a73bab6a1eb8aeb5aae9528156ee",
+          "sql": [
+            "silver_facturas.estado_pago = 'vencida'"
+          ]
+        },
+        {
+          "display_name": "Facturas vencidas mas de 30 dias",
+          "id": "01f1a73bab6b1260aa6ba61ab629f184",
+          "sql": [
+            "silver_facturas.estado_pago = 'vencida' AND silver_facturas.dias_atraso > 30"
+          ]
+        }
+      ],
+      "measures": [
+        {
+          "display_name": "Revenue total en USD",
+          "id": "01f1a73bab6a1318bc2eb84142082f67",
+          "sql": [
+            "SUM(gold_revenue_by_country_service.total_revenue_usd)"
+          ]
+        },
+        {
+          "display_name": "ARPU (Average Revenue Per User)",
+          "id": "01f1a73bab6a179db0d61bb122b1f9cd",
+          "sql": [
+            "SUM(gold_arpu_by_segment.total_revenue_usd) / NULLIF(SUM(gold_arpu_by_segment.unique_customers), 0)"
+          ]
+        },
+        {
+          "display_name": "Tasa de cobro",
+          "id": "01f1a73bab6a1b5ba9a636b368d60848",
+          "sql": [
+            "AVG(gold_billing_health.tasa_cobro_pct)"
+          ]
+        }
+      ]
+    }
+  },
+  "version": 2
+}

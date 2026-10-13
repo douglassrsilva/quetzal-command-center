@@ -1,0 +1,88 @@
+{
+  "schema_version": "quetzal-lakeflow-execution-evidence-v1",
+  "evidence_type": "historical_lakeflow_run",
+  "collection_mode": "READ_ONLY_HISTORY_REUSE",
+  "collected_at": "2026-10-12T21:30:00Z",
+  "workspace_host": "https://fevm-classic-stable-douglas-s.cloud.databricks.com",
+  "pipeline": {
+    "pipeline_id": "40ff188f-ea42-445e-93bf-4021193cfbe2",
+    "name": "[demo] Quetzal | Lakeflow medallion",
+    "serverless": true,
+    "photon": true,
+    "continuous": false,
+    "schedule_configured": false
+  },
+  "orchestration": {
+    "job_id": "136193321581408",
+    "job_run_id": "62176317131697",
+    "task_run_id": "979380689431071",
+    "trigger": "ONE_TIME",
+    "execution_mode": "manual-only",
+    "job_result_state": "SUCCESS",
+    "full_refresh": true
+  },
+  "update": {
+    "update_id": "e558c15d-84ef-4e2e-a82b-9ac203899787",
+    "state": "COMPLETED",
+    "start_time_utc": "2026-10-12T00:47:12Z",
+    "end_time_utc": "2026-10-12T00:51:06Z",
+    "duration_ms": 234050,
+    "terminal_event": "Update e558c1 is COMPLETED."
+  },
+  "flow_summary": {
+    "total": 27,
+    "completed": 27,
+    "failed": 0,
+    "bronze": 12,
+    "silver": 8,
+    "gold": 7
+  },
+  "completed_flows": {
+    "bronze": [
+      "bronze_paises",
+      "bronze_segmentos",
+      "bronze_planes",
+      "bronze_torres_red",
+      "bronze_clientes",
+      "bronze_suscripciones",
+      "bronze_facturas",
+      "bronze_cdrs",
+      "bronze_telemetria_red",
+      "bronze_tickets",
+      "bronze_nps",
+      "bronze_churn_features"
+    ],
+    "silver": [
+      "silver_clientes",
+      "silver_suscripciones",
+      "silver_facturas",
+      "silver_cdrs",
+      "silver_telemetria_red",
+      "silver_tickets",
+      "silver_nps",
+      "silver_churn_features"
+    ],
+    "gold": [
+      "gold_arpu_by_segment",
+      "gold_billing_health",
+      "gold_churn_risk_summary",
+      "gold_customer_satisfaction",
+      "gold_network_health",
+      "gold_revenue_by_country_service",
+      "gold_subscriber_metrics"
+    ]
+  },
+  "assertions": {
+    "execution_completed": true,
+    "all_declared_flows_completed": true,
+    "no_flow_failed": true,
+    "run_started_during_evidence_collection": false,
+    "training_started_during_evidence_collection": false
+  },
+  "provenance": {
+    "job_api": "/api/2.2/jobs/runs/get?run_id=62176317131697",
+    "pipeline_update_api": "/api/2.0/pipelines/40ff188f-ea42-445e-93bf-4021193cfbe2/updates/e558c15d-84ef-4e2e-a82b-9ac203899787",
+    "flow_names_source": "versioned Lakeflow source under lakeflow/bronze, lakeflow/silver and lakeflow/gold",
+    "note": "Historical successful run reused as requested; no pipeline, generation or ML workload was started to create this evidence."
+  }
+}

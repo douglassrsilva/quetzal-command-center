@@ -1,0 +1,8 @@
+resources:
+  genie_spaces:
+    quetzal_genie_clientes:
+      title: "[${bundle.target}] Quetzal | Inteligencia de Clientes"
+      warehouse_id: ${var.sql_warehouse_id}
+      file_path: ../genie_spaces/quetzal_genie_clientes.geniespace.json
+      description: Espacio de inteligencia de clientes de Quetzal Telecom. Separa churn individual, CLV, NPS, alcance, exposición relacional y grupos de relaciones en 12 países.
+      parent_path: ${workspace.root_path}

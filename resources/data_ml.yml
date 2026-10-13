@@ -1,0 +1,230 @@
+resources:
+  pipelines:
+    quetzal_lakehouse_pipeline:
+      name: "[${bundle.target}] Quetzal | Lakeflow medallion"
+      catalog: ${var.catalog}
+      schema: ${var.schema}
+      serverless: true
+      photon: true
+      channel: CURRENT
+      edition: ADVANCED
+      continuous: false
+      development: false
+      libraries:
+        - file:
+            path: ../lakeflow/bronze/ingestion.py
+        - file:
+            path: ../lakeflow/silver/quality.py
+        - file:
+            path: ../lakeflow/gold/business_kpis.py
+      configuration:
+        quetzal.catalog: ${var.catalog}
+        quetzal.schema: ${var.schema}
+        quetzal.volume_path: /Volumes/${var.catalog}/${var.schema}/${var.raw_volume}
+
+  jobs:
+    quetzal_synthetic_data_generation:
+      name: "[${bundle.target}] Quetzal | Generación sintética manual"
+      description: Regenera el landing sintético de la demo. Sobrescribe Parquet únicamente cuando un operador inicia este job manualmente.
+      max_concurrent_runs: 1
+      timeout_seconds: 28800
+      queue:
+        enabled: true
+      tags:
+        project: quetzal
+        workload: synthetic-data
+        managed_by: dabs
+        data_classification: synthetic
+        execution_mode: manual-only
+      tasks:
+        - task_key: dimensions
+          notebook_task:
+            notebook_path: ../notebooks/synthetic_data/01_dimensiones.py
+            base_parameters: &synthetic_parameters
+              catalog: ${var.catalog}
+              schema: ${var.schema}
+              raw_volume: ${var.raw_volume}
+              seed: ${var.ml_seed}
+              reference_date: ${var.synthetic_reference_date}
+              num_customers: ${var.synthetic_num_customers}
+              months_history: ${var.synthetic_months_history}
+              cdr_per_customer: ${var.synthetic_cdr_per_customer}
+              tickets_per_1000: ${var.synthetic_tickets_per_1000}
+              nps_sample_rate: ${var.synthetic_nps_sample_rate}
+              churn_label_horizon_days: ${var.churn_label_horizon_days}
+          timeout_seconds: 1800
+        - task_key: customers
+          depends_on:
+            - task_key: dimensions
+          notebook_task:
+            notebook_path: ../notebooks/synthetic_data/02_clientes.py
+            base_parameters: *synthetic_parameters
+          timeout_seconds: 3600
+        - task_key: subscriptions_billing
+          depends_on:
+            - task_key: customers
+          notebook_task:
+            notebook_path: ../notebooks/synthetic_data/03_suscripciones_billing.py
+            base_parameters: *synthetic_parameters
+          timeout_seconds: 7200
+        - task_key: network_cdrs
+          depends_on:
+            - task_key: subscriptions_billing
+          notebook_task:
+            notebook_path: ../notebooks/synthetic_data/04_red_cdrs.py
+            base_parameters: *synthetic_parameters
+          timeout_seconds: 10800
+        - task_key: churn_interactions
+          depends_on:
+            - task_key: network_cdrs
+          notebook_task:
+            notebook_path: ../notebooks/synthetic_data/05_churn_interacciones.py
+            base_parameters: *synthetic_parameters
+          timeout_seconds: 7200
+
+    quetzal_lakeflow_refresh:
+      name: "[${bundle.target}] Quetzal | Lakeflow refresh manual"
+      description: Procesa el landing raw con Lakeflow Declarative Pipelines. Sin schedule ni trigger.
+      max_concurrent_runs: 1
+      timeout_seconds: 21600
+      queue:
+        enabled: true
+      tags:
+        project: quetzal
+        workload: medallion
+        managed_by: dabs
+        execution_mode: manual-only
+      tasks:
+        - task_key: medallion_update
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.quetzal_lakehouse_pipeline.id}
+            # O gerador manual sobrescreve o landing Parquet. Um full refresh
+            # reinicia os checkpoints do Auto Loader e garante uma reconstrução
+            # determinística das três camadas para cada snapshot da demo.
+            full_refresh: true
+          timeout_seconds: 21600
+
+    quetzal_ml_refresh:
+      name: "[${bundle.target}] Quetzal | ML train + score manual"
+      description: Entrena, registra y ejecuta scoring de churn, anomalías y CLV. Solo ejecución manual; cada output registra versión y run MLflow.
+      max_concurrent_runs: 1
+      timeout_seconds: 28800
+      queue:
+        enabled: true
+      tags:
+        project: quetzal
+        workload: ml-lifecycle
+        managed_by: dabs
+        data_classification: synthetic
+        execution_mode: manual-only
+      tasks:
+        - task_key: train_churn
+          spark_python_task:
+            python_file: ../ml/churn/train.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_churn_features
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.churn_model_name}
+              - --experiment-name
+              - ${var.ml_experiment_root}-churn-prediction
+              - --seed
+              - ${var.ml_seed}
+              - --max-train-rows
+              - ${var.ml_max_train_rows}
+              - --label-horizon-days
+              - ${var.churn_label_horizon_days}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+        - task_key: score_churn
+          depends_on:
+            - task_key: train_churn
+          spark_python_task:
+            python_file: ../ml/churn/score.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_churn_features
+              - --output-table
+              - ${var.catalog}.${var.schema}.${var.churn_predictions_table}
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.churn_model_name}
+              - --label-horizon-days
+              - ${var.churn_label_horizon_days}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+        - task_key: train_network_anomaly
+          spark_python_task:
+            python_file: ../ml/network/train.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_telemetria_red
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.network_model_name}
+              - --experiment-name
+              - ${var.ml_experiment_root}-network-anomaly-detection
+              - --seed
+              - ${var.ml_seed}
+              - --max-train-rows
+              - ${var.ml_max_train_rows}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+        - task_key: score_network_anomaly
+          depends_on:
+            - task_key: train_network_anomaly
+          spark_python_task:
+            python_file: ../ml/network/score.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_telemetria_red
+              - --output-table
+              - ${var.catalog}.${var.schema}.${var.network_anomalies_table}
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.network_model_name}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+        - task_key: train_clv
+          depends_on:
+            - task_key: score_churn
+          spark_python_task:
+            python_file: ../ml/clv/train.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_churn_features
+              - --churn-table
+              - ${var.catalog}.${var.schema}.${var.churn_predictions_table}
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.clv_model_name}
+              - --experiment-name
+              - ${var.ml_experiment_root}-clv-segmentation
+              - --seed
+              - ${var.ml_seed}
+              - --max-train-rows
+              - ${var.ml_max_train_rows}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+        - task_key: score_clv
+          depends_on:
+            - task_key: train_clv
+          spark_python_task:
+            python_file: ../ml/clv/score.py
+            parameters:
+              - --source-table
+              - ${var.catalog}.${var.schema}.silver_churn_features
+              - --churn-table
+              - ${var.catalog}.${var.schema}.${var.churn_predictions_table}
+              - --output-table
+              - ${var.catalog}.${var.schema}.${var.clv_segments_table}
+              - --model-name
+              - ${var.catalog}.${var.schema}.${var.clv_model_name}
+          environment_key: ml_runtime
+          timeout_seconds: 7200
+      environments:
+        - environment_key: ml_runtime
+          spec:
+            client: "1"
+            dependencies:
+              - mlflow==3.5.0
+              - lightgbm==4.5.0
+              - xgboost==2.1.3
+              - scikit-learn==1.5.2
+              - pandas==2.2.3
