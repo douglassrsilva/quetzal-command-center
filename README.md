@@ -204,11 +204,14 @@ Os IDs usados pelo App para os espaços Genie vêm das referências de recursos 
 
 ## Validação
 
-O deck executivo anexável, com problema telecom, valor de negócio, arquitetura,
-decisões, limitações e contribuição do build, está disponível em
-[docs/quetzal-executive-deck.pdf](docs/quetzal-executive-deck.pdf); sua fonte
-editável está em
-[docs/quetzal-executive-deck.md](docs/quetzal-executive-deck.md).
+O deck executivo anexável e editável, com problema telecom, valor de negócio,
+arquitetura, decisões, limitações, contribuição do build e capturas reais do
+App, está disponível em
+[docs/quetzal-executive-deck.pptx](docs/quetzal-executive-deck.pptx). Ele pode
+ser reconstruído por
+[scripts/build_executive_deck.py](scripts/build_executive_deck.py); as capturas
+incorporadas ficam em `docs/screenshots/deck/` e identidades humanas visíveis
+foram mascaradas antes da inclusão.
 
 As evidências textuais da execução publicada, incluindo deployment, preflight,
 Lakeflow, consulta Genie, versões ML, OntoBricks, Lakebase, UI e limitações,
